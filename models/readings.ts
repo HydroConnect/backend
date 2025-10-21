@@ -2,12 +2,12 @@ import { model, Schema } from "mongoose";
 import * as z from "zod";
 
 interface iReadings {
-    turbidity: Number;
-    pH: Number;
-    tds: Number;
-    temperature: Number;
-    percent: Number;
-    timestamp: String;
+    turbidity: number;
+    pH: number;
+    tds: number;
+    temperature: number;
+    percent: number;
+    timestamp: string;
 }
 
 const zReadings = z

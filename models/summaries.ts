@@ -5,7 +5,7 @@ import * as z from "zod";
 interface iSummaries {
     min: iReadings;
     max: iReadings;
-    timestamp: String;
+    timestamp: string;
 }
 
 const zSummaries = z.strictObject({
