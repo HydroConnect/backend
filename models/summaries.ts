@@ -1,5 +1,18 @@
 import { model, Schema } from "mongoose";
-import { readingsSchema } from "./readings.js";
+import { readingsSchema, zReadings, type iReadings } from "./readings.js";
+import * as z from "zod";
+
+interface iSummaries {
+    min: iReadings;
+    max: iReadings;
+    timestamp: String;
+}
+
+const zSummaries = z.strictObject({
+    min: zReadings,
+    max: zReadings,
+    timestamp: z.iso.datetime(),
+});
 
 const summariesSchema = new Schema({
     min: { type: readingsSchema, required: true },
@@ -8,4 +21,5 @@ const summariesSchema = new Schema({
 });
 
 const summariesModel = model("summaries", summariesSchema);
-export { summariesSchema, summariesModel };
+export { summariesSchema, summariesModel, zSummaries };
+export type { iSummaries };
