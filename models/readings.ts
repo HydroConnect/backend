@@ -1,4 +1,26 @@
 import { model, Schema } from "mongoose";
+import * as z from "zod";
+
+interface iReadings {
+    turbidity: Number;
+    pH: Number;
+    tds: Number;
+    temperature: Number;
+    percent: Number;
+    timestamp: String;
+}
+
+const zReadings = z
+    .strictObject({
+        turbidity: z.number(),
+        pH: z.number(),
+        tds: z.number(),
+        temperature: z.number(),
+        percent: z.number(),
+        timestamp: z.iso.datetime(),
+    })
+    .required()
+    .strict();
 
 const readingsSchema = new Schema({
     turbidity: { type: Number, required: true },
@@ -10,4 +32,6 @@ const readingsSchema = new Schema({
 });
 
 const readingsModel = model("readings", readingsSchema);
-export { readingsSchema, readingsModel };
+
+export { readingsSchema, readingsModel, zReadings };
+export type { iReadings };
