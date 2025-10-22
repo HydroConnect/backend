@@ -105,9 +105,9 @@ Schema for requesting report downloads.
 
 ```ts
 DownloadRequest = z.strictObject({
-    from: z.iso.datetime(),
-    to: z.iso.datetime(),
-    downloadId: z.string().max(parseInt(process.env.MAX_DOWNLOAD_ID_LENGTH!)).min(1),
+    from: z.iso.datetime(), // ISO string
+    to: z.iso.datetime(), // ISO string
+    downloadId: z.string().max(parseInt(process.env.MAX_DOWNLOAD_ID_LENGTH!)).min(1), // string
 });
 ```
 
@@ -127,12 +127,12 @@ Schema representing IoT sensor readings.
 
 ```ts
 Readings = z.strictObject({
-    turbidity: z.number(),
-    pH: z.number(),
-    tds: z.number(),
-    temperature: z.number(),
-    percent: z.number(),
-    timestamp: z.iso.datetime(),
+    turbidity: z.number(), // number
+    pH: z.number(), // number
+    tds: z.number(), // number
+    temperature: z.number(), // number
+    percent: z.number(), // number
+    timestamp: z.iso.datetime(), // ISO string
 });
 ```
 
@@ -155,9 +155,9 @@ Schema representing summary data derived from readings.
 
 ```ts
 Summaries = z.strictObject({
-    min: Readings,
-    max: Readings,
-    timestamp: z.iso.datetime(),
+    min: Readings, // Readings
+    max: Readings, // Readings
+    timestamp: z.iso.datetime(), // ISO string
 });
 ```
 
