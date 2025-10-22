@@ -10,17 +10,14 @@ interface iReadings {
     timestamp: string;
 }
 
-const zReadings = z
-    .strictObject({
-        turbidity: z.number(),
-        pH: z.number(),
-        tds: z.number(),
-        temperature: z.number(),
-        percent: z.number(),
-        timestamp: z.iso.datetime(),
-    })
-    .required()
-    .strict();
+const zReadings = z.strictObject({
+    turbidity: z.number(),
+    pH: z.number(),
+    tds: z.number(),
+    temperature: z.number(),
+    percent: z.number(),
+    timestamp: z.iso.datetime(),
+});
 
 const readingsSchema = new Schema({
     turbidity: { type: Number, required: true },

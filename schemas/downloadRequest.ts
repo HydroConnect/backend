@@ -3,7 +3,7 @@ import * as z from "zod";
 interface iDownloadRequest {
     from: string;
     to: string;
-    downloadId: String;
+    downloadId: string;
 }
 
 const zDownloadRequest = z.strictObject({
