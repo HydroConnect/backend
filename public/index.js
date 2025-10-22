@@ -40,7 +40,8 @@ socket.on("disconnect", () => {
 socket.on("readings", (data) => {
     console.log(data);
 });
-socket.on("download-data", (readings, ack) => {
+socket.on("download-data", (readings, downloadId, ack) => {
+    console.log("Data for " + downloadId);
     console.log(...readings);
     ack();
 });

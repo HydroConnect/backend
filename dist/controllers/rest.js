@@ -1,14 +1,9 @@
-import type { Request, Response } from "express";
-
 import { Router } from "express";
 import { summariesModel } from "../schemas/models/summaries.js";
 import { filterMongo } from "../lib/filterMongo.js";
-
 const restRouter = Router();
-
-restRouter.get("/summary", async (req: Request, res: Response) => {
+restRouter.get("/summary", async (req, res) => {
     const summary = await summariesModel.find().limit(7);
-    res.status(200).json(filterMongo(summary));
+    res.json(filterMongo(summary));
 });
-
 export { restRouter };
