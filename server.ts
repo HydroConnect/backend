@@ -1,13 +1,10 @@
+import {} from "./lib/setupDotenv.js";
 import type { Request, Response } from "express";
-
-import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import { restRouter } from "./controllers/rest.js";
 import { createServer } from "http";
 import { initSocketIO } from "./controllers/io.js";
-
-dotenv.config({ path: "./.d.env" });
+import { restRouter } from "./controllers/rest.js";
 
 const app = express();
 const server = createServer(app);

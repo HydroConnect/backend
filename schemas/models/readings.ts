@@ -28,10 +28,11 @@ const readingsSchema = new Schema({
     tds: { type: Number, required: true },
     temperature: { type: Number, required: true }, // Degree Celcius,
     percent: { type: Number, required: true }, // Percent from formula,
-    timestamp: { type: Date, required: true, immutable: true, default: Date.now() },
+    timestamp: { type: Date, required: true, immutable: true, default: Date.now },
 });
 
-const readingsModel = model("readings", readingsSchema);
+readingsSchema.index({ timestamp: 1 }, { unique: true });
 
+const readingsModel = model("readings", readingsSchema);
 export { readingsSchema, readingsModel, zReadings };
 export type { iReadings };

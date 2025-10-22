@@ -1,7 +1,9 @@
 import { type Server as HttpServer } from "http";
 import { Server, Socket } from "socket.io";
-import { readingsModel, zReadings } from "../models/readings.js";
+import { readingsModel, zReadings } from "../schemas/models/readings.js";
 import { chemFormula } from "../lib/chemFormula.js";
+import { zDownloadRequest } from "../schemas/downloadRequest.js";
+import { sendDownload } from "../lib/sendDownload.js";
 
 export function initSocketIO(server: HttpServer) {
     const io = new Server(server);
@@ -25,6 +27,15 @@ export function initSocketIO(server: HttpServer) {
                         err
                     );
                 });
+            } catch (err) {
+                console.log("Invalid Data!\n-------------\n", err);
+            }
+        });
+
+        socket.on("download-request", (downloadRequest) => {
+            try {
+                downloadRequest = zDownloadRequest.parse(downloadRequest);
+                sendDownload(socket, downloadRequest);
             } catch (err) {
                 console.log("Invalid Data!\n-------------\n", err);
             }

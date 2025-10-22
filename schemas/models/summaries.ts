@@ -17,9 +17,10 @@ const zSummaries = z.strictObject({
 const summariesSchema = new Schema({
     min: { type: readingsSchema, required: true },
     max: { type: readingsSchema, required: true },
-    timestamp: { type: Date, required: true, immutable: true, default: Date.now() },
+    timestamp: { type: Date, required: true, immutable: true, default: Date.now },
 });
 
+summariesSchema.index({ timestamp: 1 }, { unique: true });
 const summariesModel = model("summaries", summariesSchema);
 export { summariesSchema, summariesModel, zSummaries };
 export type { iSummaries };

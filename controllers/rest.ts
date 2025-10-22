@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 
 import { Router } from "express";
-import { summariesModel } from "../models/summaries.js";
+import { summariesModel } from "../schemas/models/summaries.js";
 import { filterMongo } from "../lib/filterMongo.js";
 
 const restRouter = Router();

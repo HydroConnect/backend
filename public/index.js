@@ -3,6 +3,7 @@ import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 const connectButton = document.getElementById("connectButton");
 const disconnectButton = document.getElementById("disconnectButton");
 const sendButton = document.getElementById("sendButton");
+const downloadButton = document.getElementById("downloadButton");
 
 const socket = io("http://localhost:3000/io/v1", {
     autoConnect: false,
@@ -22,6 +23,13 @@ sendButton.addEventListener("click", () => {
         turbidity: 10,
     });
 });
+downloadButton.addEventListener("click", () => {
+    socket.emit("download-request", {
+        from: "2025-10-22T01:32:11.043Z",
+        to: "2025-10-22T01:32:11.048Z",
+        downloadId: "MDOW",
+    });
+});
 
 socket.on("connect", () => {
     console.log("Connected!");
@@ -31,4 +39,11 @@ socket.on("disconnect", () => {
 });
 socket.on("readings", (data) => {
     console.log(data);
+});
+socket.on("download-data", (readings, ack) => {
+    console.log(...readings);
+    ack();
+});
+socket.on("download-finish", (downloadId) => {
+    console.log("Download for " + downloadId + " has finished!");
 });

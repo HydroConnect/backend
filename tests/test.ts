@@ -2,8 +2,8 @@ import { it, describe, expect, beforeAll, afterAll } from "vitest";
 import path from "path";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { readingsModel } from "../models/readings.js";
-import { summariesModel } from "../models/summaries.js";
+import { readingsModel } from "../schemas/models/readings.js";
+import { summariesModel } from "../schemas/models/summaries.js";
 import { assert } from "console";
 
 dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
