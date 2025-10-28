@@ -2,7 +2,7 @@ import { it, describe, expect, beforeAll, afterAll } from "vitest";
 import path from "path";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import * as axios from "axios";
+import { Axios } from "axios";
 import { readingsModel, zReadings } from "../schemas/models/readings.js";
 import { summariesModel, zSummaries } from "../schemas/models/summaries.js";
 import { readFileSync } from "fs";
@@ -12,6 +12,11 @@ dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
 
 const READINGS_ARR: InstanceType<typeof readingsModel>[] = [];
 const SUMMARIES_ARR: InstanceType<typeof summariesModel>[] = [];
+
+const dummyIoTPayload = {
+    readings: { pH: 7, tds: 6, temperature: 10, turbidity: 10, control: 13 },
+    key: process.env.IOT_KEY,
+};
 
 beforeAll(async () => {
     const readingsData = JSON.parse(
@@ -41,7 +46,7 @@ afterAll(async () => {
     await mongoose.disconnect();
 });
 
-const myaxios = new axios.Axios({
+const myaxios = new Axios({
     headers: {
         "Content-Type": "application/json",
     },
@@ -83,7 +88,7 @@ describe("POST /readings", () => {
         const { status } = await myaxios.post(
             "/readings",
             JSON.stringify({
-                readings: { pH: 7, tds: 6, temperature: 10, turbidity: 10, control: 13 },
+                readings: dummyIoTPayload.readings,
                 key: createHash("sha512")
                     .update(randomBytes(2 ^ 30))
                     .digest("base64url"),
@@ -93,13 +98,7 @@ describe("POST /readings", () => {
     });
 
     it("Post readings", async () => {
-        await myaxios.post(
-            "/readings",
-            JSON.stringify({
-                readings: { pH: 7, tds: 6, temperature: 10, turbidity: 10, control: 13 },
-                key: process.env.IOT_KEY,
-            })
-        );
+        await myaxios.post("/readings", JSON.stringify(dummyIoTPayload));
         const data = JSON.parse((await myaxios.get("/latest")).data);
         expect(new Date(data.timestamp) > READINGS_ARR[READINGS_ARR.length - 1]!.timestamp).toEqual(
             true
