@@ -6,6 +6,7 @@ interface iReadings {
     pH: number;
     tds: number;
     temperature: number;
+    control: number;
     percent: number;
     timestamp: string;
 }
@@ -15,6 +16,7 @@ const zReadings = z.strictObject({
     pH: z.number(),
     tds: z.number(),
     temperature: z.number(),
+    control: z.int().min(0).max(31),
     percent: z.number(),
     timestamp: z.iso.datetime(),
 });
@@ -24,6 +26,7 @@ const readingsSchema = new Schema({
     pH: { type: Number, required: true },
     tds: { type: Number, required: true },
     temperature: { type: Number, required: true }, // Degree Celcius,
+    control: { type: Number, required: true }, // For control info MSB --> LSB (valve, sensor, distribution, resservoir, tank)
     percent: { type: Number, required: true }, // Percent from formula,
     timestamp: { type: Date, required: true, immutable: true, default: Date.now },
 });
