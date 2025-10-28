@@ -28,13 +28,15 @@ export function RESTErrorHandler(err: Error, req: Request, res: Response, next: 
         return next(err);
     }
 
-    if (err instanceof HttpError) {
-        res.status(err.status).json(`${err.message}\nPossible cause: ${err.cause}`);
-        return;
-    } else {
-        err = new HttpError(500);
-        res.status((err as HttpError).status).json(`${err.message}\nPossible cause: ${err.cause}`);
+    if (!(err instanceof HttpError)) {
+        if (err instanceof SyntaxError) {
+            err = new HttpError(400);
+        } else {
+            err = new HttpError(500);
+        }
     }
+
+    res.status((err as HttpError).status).json(`${err.message}\nPossible cause: ${err.cause}`);
 
     return;
 }

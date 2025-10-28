@@ -1,5 +1,5 @@
-import { type iReadings } from "../schemas/models/readings.js";
+import type { iIoTPayload } from "../schemas/IoTPayload.js";
 
-export function chemFormula(readings: iReadings): number {
-    return readings.percent;
+export function chemFormula(readings: iIoTPayload["readings"]): number {
+    return readings.pH;
 }
