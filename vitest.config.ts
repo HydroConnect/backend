@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
-import { BaseSequencer, TestSpecification, Vitest, type TestSequencer } from "vitest/node";
+import { BaseSequencer, TestSpecification, Vitest } from "vitest/node";
 
 const testFiles = ["rest_v1.ts", "io_v1.ts"];
 
