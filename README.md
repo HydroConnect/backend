@@ -259,6 +259,9 @@ Endpoint for IoT devices to upload readings data and trigger IO event `readings`
 **Response:**
 `true`
 
+**Error:**
+`HttpError(400 | 403)`
+
 ---
 
 ## Socket.IO API
