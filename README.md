@@ -284,6 +284,16 @@ Broadcasting latest data that is sent by IoT.
 
 ---
 
+#### `Socket.emit("error")`
+
+**Description:**
+For signaling error to client.
+
+**Output:**
+`Error` (JSON Object not class)
+
+---
+
 #### `Socket.on("download-request")`
 
 **Description:**
@@ -318,14 +328,15 @@ Emitted when the server completes sending all chunks of a requested report.
 
 The server behavior is controlled via environment variables defined in `.env`.
 
-| Variable                 | Description                                                 | Example Value                                                                            |
-| ------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `PORT`                   | Server listening port                                       | `3000`                                                                                   |
-| `DB_URL`                 | MongoDB connection URI                                      | `mongodb://localhost:27017/Hydroconnect`                                                 |
-| `DOWNLOAD_CHUNK_N_SIZE`  | Number of records per report chunk                          | `2`                                                                                      |
-| `MAX_DOWNLOAD_ID_LENGTH` | Maximum length of the download identifier                   | `10`                                                                                     |
-| `NODE_ENV`               | Application environment (e.g., `development`, `production`) | `development`                                                                            |
-| `IOT_KEY`                | Secure hash key for IoT authentication                      | `_49lFI-ngS-9eTp8enaRCMG6ZwLeQQaorZ_RgAvxBP4DtYoUvVokG9whNZ9khQw3OL00xnRnko08vnKtHfAbVA` |
+| Variable                        | Description                                                                    | Example Value                                                                            |
+| ------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `PORT`                          | Server listening port                                                          | `3000`                                                                                   |
+| `DB_URL`                        | MongoDB connection URI                                                         | `mongodb://localhost:27017/Hydroconnect`                                                 |
+| `DOWNLOAD_CHUNK_N_SIZE`         | Number of records per report chunk                                             | `2`                                                                                      |
+| `MAX_DOWNLOAD_ID_LENGTH`        | Maximum length of the download identifier                                      | `10`                                                                                     |
+| `NODE_ENV`                      | Application environment (e.g., `development`, `production`)                    | `development`                                                                            |
+| `IOT_KEY`                       | Secure hash key for IoT authentication                                         | `_49lFI-ngS-9eTp8enaRCMG6ZwLeQQaorZ_RgAvxBP4DtYoUvVokG9whNZ9khQw3OL00xnRnko08vnKtHfAbVA` |
+| `MIN_DOWNLOAD_INTERVAL_SECONDS` | Interval in which download request can be made after last request (in seconds) | `60`                                                                                     |
 
 When `NODE_ENV=development`, the following features are enabled:
 
@@ -347,7 +358,7 @@ The project includes comprehensive test cases for all available endpoints.
 **Test coverage includes:**
 
 -   REST `/summary`, `/latest`, and `/readings` endpoints.
--   IO `readings`, `download-request`, `download-data`, and `download-finish` events.
+-   IO `readings`, `download-request`, `download-data`, and `download-finish`, `error` events.
 
 ---
 
@@ -371,11 +382,17 @@ npm run build  # (Lint and then Build)
 
 ## Error Handling
 
-There is a custom `HttpError` class for HTTP-related errors with a `status` property.
+There is a custom `HttpError` class for HTTP-related errors with a `status` property and `IOError` with `IOErrorEnum` for IO-related errors.
 The system also includes two dedicated handlers:
 
--   `RESTErrorHandler` for REST endpoints. (e.g. 400 for invalid request body, 500 for any unknown error)
--   `IOErrorHandler` for Socket.IO events.
+-   `RESTErrorHandler` for REST endpoints (e.g. 400 for invalid request body, 500 for any unknown error)
+-   `IOErrorHandler` for Socket.IO events (i.e. Sent `error` events)
+
+---
+
+### Developer Note
+
+Wath out for variable `tracker` in `io.ts` as it could lead to memory leak for many connections. (Solution: Limit Socket.IO connection when scaling)
 
 ---
 
