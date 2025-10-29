@@ -69,4 +69,14 @@ describe("Downloads", () => {
             socket.emit("download-request", downloadRequestPayload);
         });
     });
+
+    it("Rejects consecutive downloads", () => {
+        return new Promise((resolve) => {
+            socket.on("error", (err: Error) => {
+                expect(err.name).toEqual("IOError");
+                resolve(true);
+            });
+            socket.emit("download-request", downloadRequestPayload);
+        });
+    });
 });
