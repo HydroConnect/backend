@@ -6,6 +6,8 @@
     "type": "module",
     "scripts": {
         "start": "tsc && node ./dist/server.js",
+        "lint": "eslint controllers lib schemas server.ts",
+        "build": "npm run lint && npm run start",
         "dev": "tsx --watch ./server.ts",
         "test": "vitest"
     },
@@ -31,9 +33,16 @@
         "zod": "^4.1.12"
     },
     "devDependencies": {
+        "@eslint/js": "^9.38.0",
         "@types/express": "^5.0.3",
         "@types/node": "^24.7.2",
+        "axios": "^1.13.0",
+        "eslint": "^9.38.0",
+        "globals": "^16.4.0",
+        "jiti": "^2.6.1",
+        "socket.io-client": "^4.8.1",
         "typescript": "^5.9.3",
+        "typescript-eslint": "^8.46.2",
         "vitest": "^3.2.4"
     }
 }

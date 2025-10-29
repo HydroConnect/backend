@@ -1,32 +1,25 @@
 import { type Server as HttpServer } from "http";
-import { Server, Socket } from "socket.io";
-import { readingsModel, zReadings } from "../models/readings.js";
-import { chemFormula } from "../lib/chemFormula.js";
+import { Server, Socket, type DefaultEventsMap } from "socket.io";
+import { zDownloadRequest } from "../schemas/downloadRequest.js";
+import { sendDownload } from "../lib/sendDownload.js";
+import { IOErrorHandler } from "../lib/errorHandler.js";
+
+let io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+
+export function getIO() {
+    return io;
+}
 
 export function initSocketIO(server: HttpServer) {
-    const io = new Server(server);
+    io = new Server(server);
 
     io.of("/io/v1").on("connection", (socket: Socket) => {
-        socket.on("post-readings", (data) => {
+        socket.on("download-request", (downloadRequest) => {
             try {
-                // Initialize empty field to match schema
-                data.percent = 0;
-                data.timestamp = new Date(Date.now()).toISOString();
-
-                data = zReadings.parse(data);
-                data.percent = chemFormula(data);
-                socket.broadcast.emit("readings", data);
-
-                new readingsModel(data).save().catch((err) => {
-                    console.log(
-                        "Failed to save to Database!\n-------\nData: ",
-                        data,
-                        "\n\n-----\n\nErr: ",
-                        err
-                    );
-                });
+                downloadRequest = zDownloadRequest.parse(downloadRequest);
+                sendDownload(socket, downloadRequest);
             } catch (err) {
-                console.log("Invalid Data!\n-------------\n", err);
+                IOErrorHandler(err);
             }
         });
     });

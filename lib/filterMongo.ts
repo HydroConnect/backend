@@ -20,8 +20,12 @@ function _filterMongo(entry: any): any {
     return entry;
 }
 
-export function filterMongo(mongoResult: HydratedDocument<any>[]): any[] {
-    return mongoResult.map((entry) => {
-        return _filterMongo(entry.toObject());
-    });
+export function filterMongo(mongoResult: HydratedDocument<any>[] | HydratedDocument<any>): any {
+    if (mongoResult instanceof Array) {
+        return mongoResult.map((entry) => {
+            return _filterMongo(entry.toObject());
+        });
+    }
+
+    return _filterMongo(mongoResult.toObject());
 }
