@@ -7,7 +7,7 @@ const getSummaryButton = document.getElementById("getSummaryButton");
 const getLatestButton = document.getElementById("getLatestButton");
 const downloadButton = document.getElementById("downloadButton");
 
-const socket = io("http://localhost:3000/io/v1", {
+const socket = io("/io/v1", {
     autoConnect: false,
 });
 
@@ -52,6 +52,9 @@ socket.on("connect", () => {
 });
 socket.on("disconnect", () => {
     console.log("Disconnected!");
+});
+socket.on("error", (err) => {
+    console.log(err);
 });
 socket.on("readings", (data) => {
     console.log(data);
