@@ -43,6 +43,6 @@ export async function sendDownload(
             }
         });
     } catch (err) {
-        IOErrorHandler(err);
+        IOErrorHandler(err as Error, socket);
     }
 }
