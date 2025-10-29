@@ -32,51 +32,49 @@ It enables:
 
 ---
 
-Here’s a **clean and professional Markdown** documentation for your folder structure, including explanations and developer-oriented remarks that match your current project setup and intent:
-
----
-
 ## Project Structure
 
 The following is the directory structure for the **Hydroconnect API** project.
 Each folder and file serves a distinct purpose in organizing REST endpoints, Socket.IO logic, schema definitions, and build output.
 
 ```
+
 Hydroconnect-API/
 │
 ├── controllers/
-│   ├── io.ts                  # Handles Socket.IO events and real-time operations
-│   └── rest.ts                # Handles REST API routes and HTTP logic
+│ ├── io.ts # Handles Socket.IO events and real-time operations
+│ └── rest.ts # Handles REST API routes and HTTP logic
 │
-├── dist/                      # Compiled output (TypeScript build artifacts)
+├── dist/ # Compiled output (TypeScript build artifacts)
 │
-├── lib/                       # Utility modules or shared library code
+├── lib/ # Utility modules or shared library code
 │
-├── node_modules/              # Project dependencies
+├── node_modules/ # Project dependencies
 │
-├── public/                    # Publicly served assets (if any)
+├── public/ # Publicly served assets (if any)
 │
-├── schemas/                   # All Zod schema definitions
-│   └── models/
+├── schemas/ # All Zod schema definitions
+│ └── models/
 │
-├── tests/                     # Unit and integration test cases
+├── tests/ # Unit and integration test cases and sample DB data
 │
-├── .d.env                     # Example environment file for development
-├── .env                       # Environment configuration (ignored in version control)
+├── .d.env # Example environment file for development
+├── .env # Environment configuration (ignored in version control)
 │
-├── .gitignore                 # Git ignore rules
-├── .prettierrc                # Code formatting configuration
-├── .eslintrc.ts               # ESLint configuration for linting
+├── .gitignore # Git ignore rules
+├── .prettierrc # Code formatting configuration
+├── .eslintrc.ts # ESLint configuration for linting
 │
-├── package.json               # Project metadata and dependencies
-├── package-lock.json          # Dependency lock file
+├── package.json # Project metadata and dependencies
+├── package-lock.json # Dependency lock file
 │
-├── README.md                  # Project documentation
+├── README.md # Project documentation
 │
-├── server.ts                  # Main entry point (initializes Express and Socket.IO servers)
+├── server.ts # Main entry point (initializes Express and Socket.IO servers)
 │
-├── tsconfig.json              # TypeScript configuration
-└── vitest.config.ts           # Vitest configuration for testing
+├── tsconfig.json # TypeScript configuration
+└── vitest.config.ts # Vitest configuration for testing
+
 ```
 
 ---
@@ -99,15 +97,46 @@ Versioning ensures backward compatibility for both REST and Socket.IO interfaces
 All data models are validated using **Zod**.
 The following strict schema definitions apply to all REST and Socket.IO interactions.
 
+### `IoTPayload`
+
+Schema for IoT device upload payload.
+
+```ts
+interface iIoTPayload {
+    key: string;
+    readings: Omit<iReadings, "timestamp" | "percent">;
+}
+
+zIoTPayload = z.strictObject({
+    key: z.hash("sha512", { enc: "base64url" }),
+    readings: zReadings.omit({ timestamp: true, percent: true }),
+});
+```
+
+**Fields:**
+
+| Field      | Type                                     | Description                                   |     |
+| ---------- | ---------------------------------------- | --------------------------------------------- | --- |
+| `key`      | `string`                                 | SHA-512 hashed authentication key.            |     |
+| `readings` | `Omit<iReadings,"timestamp"\|"percent">` | Reading data excluding timestamp and percent. |
+
+---
+
 ### `DownloadRequest`
 
 Schema for requesting report downloads.
 
 ```ts
-DownloadRequest = z.strictObject({
-    from: z.iso.datetime(), // ISO string
-    to: z.iso.datetime(), // ISO string
-    downloadId: z.string().max(parseInt(process.env.MAX_DOWNLOAD_ID_LENGTH!)).min(1), // string
+interface iDownloadRequest {
+    from: string;
+    to: string;
+    downloadId: string;
+}
+
+const zDownloadRequest = z.strictObject({
+    from: z.iso.datetime(),
+    to: z.iso.datetime(),
+    downloadId: z.string().max(parseInt(process.env.MAX_DOWNLOAD_ID_LENGTH!)).min(1),
 });
 ```
 
@@ -126,13 +155,24 @@ DownloadRequest = z.strictObject({
 Schema representing IoT sensor readings.
 
 ```ts
-Readings = z.strictObject({
-    turbidity: z.number(), // number
-    pH: z.number(), // number
-    tds: z.number(), // number
-    temperature: z.number(), // number
-    percent: z.number(), // number
-    timestamp: z.iso.datetime(), // ISO string
+interface iReadings {
+    turbidity: number;
+    pH: number;
+    tds: number;
+    temperature: number;
+    control: number;
+    percent: number;
+    timestamp: string;
+}
+
+const zReadings = z.strictObject({
+    turbidity: z.number(),
+    pH: z.number(),
+    tds: z.number(),
+    temperature: z.number(),
+    control: z.int().min(0).max(31),
+    percent: z.number(),
+    timestamp: z.iso.datetime(),
 });
 ```
 
@@ -144,6 +184,7 @@ Readings = z.strictObject({
 | `pH`          | `number`       | pH level of the water.                            |
 | `tds`         | `number`       | Total dissolved solids (ppm).                     |
 | `temperature` | `number`       | Temperature in Celsius.                           |
+| `control`     | `integer`      | Device control code (0–31).                       |
 | `percent`     | `number`       | Sensor reading percentage (used for calibration). |
 | `timestamp`   | `ISO datetime` | Timestamp of the reading.                         |
 
@@ -154,10 +195,16 @@ Readings = z.strictObject({
 Schema representing summary data derived from readings.
 
 ```ts
-Summaries = z.strictObject({
-    min: Readings, // Readings
-    max: Readings, // Readings
-    timestamp: z.iso.datetime(), // ISO string
+interface iSummaries {
+    min: iReadings;
+    max: iReadings;
+    timestamp: string;
+}
+
+const zSummaries = z.strictObject({
+    min: zReadings,
+    max: zReadings,
+    timestamp: z.iso.datetime(),
 });
 ```
 
@@ -184,36 +231,33 @@ Summaries = z.strictObject({
 #### `GET /summary`
 
 **Description:**
-Retrieves the latest summary of readings and statistics.
+Get the latest 7-day summary.
 
 **Response:**
-
-```json
-[
-    {
-        "min": {
-            "turbidity": 0.12,
-            "pH": 6.8,
-            "tds": 220,
-            "temperature": 27.1,
-            "percent": 43.2,
-            "timestamp": "2025-10-22T01:23:54.533Z"
-        },
-        "max": {
-            "turbidity": 0.85,
-            "pH": 7.5,
-            "tds": 310,
-            "temperature": 29.0,
-            "percent": 99.0,
-            "timestamp": "2025-10-22T01:25:54.533Z"
-        },
-        "timestamp": "2025-10-22T01:26:00.000Z"
-    }
-]
-```
-
-**Response Type:**
 `Summaries[]`
+
+---
+
+#### `GET /latest`
+
+**Description:**
+Get the latest reading data.
+
+**Response:**
+`Readings`
+
+---
+
+#### `POST /readings`
+
+**Description:**
+Endpoint for IoT devices to upload readings data and trigger IO event `readings`.
+
+**Body:**
+`IoTPayload`
+
+**Response:**
+`true`
 
 ---
 
@@ -227,12 +271,12 @@ Retrieves the latest summary of readings and statistics.
 
 ### Socket Events
 
-#### `Socket.on("post-readings")`
+#### `Socket.emit("readings")`
 
 **Description:**
-Used by IoT devices to send readings data to the server.
+Broadcasting latest data that is sent by IoT.
 
-**Input:**
+**Output:**
 `Readings`
 
 ---
@@ -247,13 +291,13 @@ Triggered by clients to request report downloads.
 
 ---
 
-#### `Socket.emit("readings")`
+#### `Socket.emit("download-data")`
 
 **Description:**
-Emitted by the server to provide real-time readings data from IoT devices.
+Used to send report data in chunks to the client.
 
 **Output:**
-`Readings`
+`Readings[], downloadId, ack`
 
 ---
 
@@ -263,23 +307,7 @@ Emitted by the server to provide real-time readings data from IoT devices.
 Emitted when the server completes sending all chunks of a requested report.
 
 **Output:**
-
-```json
-"downloadId": "string"
-```
-
-**Type:**
-`DownloadRequest.downloadId`
-
----
-
-#### `Socket.emit("download-data")`
-
-**Description:**
-Used to send report data in chunks to the client.
-
-**Output:**
-`Readings[]`
+`downloadId`
 
 ---
 
@@ -287,13 +315,14 @@ Used to send report data in chunks to the client.
 
 The server behavior is controlled via environment variables defined in `.env`.
 
-| Variable                 | Description                                                 | Example Value                            |
-| ------------------------ | ----------------------------------------------------------- | ---------------------------------------- |
-| `PORT`                   | Server listening port                                       | `3000`                                   |
-| `DB_URL`                 | MongoDB connection URI                                      | `mongodb://localhost:27017/Hydroconnect` |
-| `DOWNLOAD_CHUNK_N_SIZE`  | Number of records per report chunk                          | `2`                                      |
-| `MAX_DOWNLOAD_ID_LENGTH` | Maximum length of the download identifier                   | `10`                                     |
-| `NODE_ENV`               | Application environment (e.g., `development`, `production`) | `development`                            |
+| Variable                 | Description                                                 | Example Value                                                                            |
+| ------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `PORT`                   | Server listening port                                       | `3000`                                                                                   |
+| `DB_URL`                 | MongoDB connection URI                                      | `mongodb://localhost:27017/Hydroconnect`                                                 |
+| `DOWNLOAD_CHUNK_N_SIZE`  | Number of records per report chunk                          | `2`                                                                                      |
+| `MAX_DOWNLOAD_ID_LENGTH` | Maximum length of the download identifier                   | `10`                                                                                     |
+| `NODE_ENV`               | Application environment (e.g., `development`, `production`) | `development`                                                                            |
+| `IOT_KEY`                | Secure hash key for IoT authentication                      | `_49lFI-ngS-9eTp8enaRCMG6ZwLeQQaorZ_RgAvxBP4DtYoUvVokG9whNZ9khQw3OL00xnRnko08vnKtHfAbVA` |
 
 When `NODE_ENV=development`, the following features are enabled:
 
@@ -314,8 +343,8 @@ The project includes comprehensive test cases for all available endpoints.
 
 **Test coverage includes:**
 
--   REST `/summary` endpoint.
--   IO `post-readings`, `download-request`, `readings`, `download-data`, and `download-finish` events.
+-   REST `/summary`, `/latest`, and `/readings` endpoints.
+-   IO `readings`, `download-request`, `download-data`, and `download-finish` events.
 
 ---
 
@@ -328,19 +357,22 @@ npm install
 ```
 
 ```bash
-npm run dev (local development w/ Hot-Reload)
-npm run start (local development w/o Hot-Reload)
-npm run lint (Lint the project w/ ESLint)
-npm run test (Run Test Case)
-mpm run build (Lint and then Build)
+npm run dev    # (local development w/ Hot-Reload)
+npm run start  # (local development w/o Hot-Reload)
+npm run lint   # (Lint the project w/ ESLint)
+npm run test   # (Run Test Case --> Run this also to set mock data in database)
+npm run build  # (Lint and then Build)
 ```
 
 ---
 
 ## Error Handling
 
-There is a custom `HTTPError` type for HTTP related error (see `lib/errorHandler.ts`)
-The `errorHandler.ts` also contains the handler for all `Socket IO` and `REST` error.
+There is a custom `HttpError` class for HTTP-related errors with a `status` property.
+The system also includes two dedicated handlers:
+
+-   `RESTErrorHandler` for REST endpoints. (e.g. 400 for invalid request body, 500 for any unknown error)
+-   `IOErrorHandler` for Socket.IO events.
 
 ---
 
