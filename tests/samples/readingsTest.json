@@ -1,0 +1,92 @@
+[
+    {
+        "timestamp": "2025-10-22T01:32:11.037Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.043Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.045Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.046Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.047Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.048Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.049Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.050Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.051Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    },
+    {
+        "timestamp": "2025-10-22T01:32:11.052Z",
+        "tds": 6,
+        "pH": 7,
+        "turbidity": 10,
+        "percent": 0.5,
+        "temperature": 10,
+        "control": 17
+    }
+]

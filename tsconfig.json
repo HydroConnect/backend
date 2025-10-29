@@ -2,8 +2,9 @@
     "compilerOptions": {
         "rootDir": ".",
         "outDir": "./dist",
-        "module": "nodenext",
         "types": ["node", "express"],
+        "module": "nodenext",
+        "moduleDetection": "force",
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "strict": true,
@@ -11,7 +12,7 @@
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true,
-        "moduleDetection": "force",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true
     }
 }

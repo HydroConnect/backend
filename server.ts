@@ -1,12 +1,33 @@
+import {} from "./lib/setupDotenv.js";
 import type { Request, Response } from "express";
-require("dotenv").config({ path: "./.d.env" });
-const express = require("express");
-const app = express();
+import express from "express";
+import mongoose from "mongoose";
+import { createServer } from "http";
+import { initSocketIO } from "./controllers/io.js";
+import { restRouter } from "./controllers/rest.js";
+import { RESTErrorHandler } from "./lib/errorHandler.js";
 
-app.get("/", (req: Request, res: Response) => {
-    res.send("Halo!\n");
+const app = express();
+const server = createServer(app);
+
+initSocketIO(server);
+mongoose.connect(process.env.DB_URL!).then(() => {
+    console.log("Mongoose Running!");
 });
 
-app.listen(process.env.PORT, () => {
-    console.log("Server Running!");
+app.use(express.json());
+app.use("/rest/v1", restRouter);
+
+if (process.env.NODE_ENV === "development") {
+    app.use(express.static("./public"));
+}
+
+app.get("/", (req: Request, res: Response) => {
+    res.send("Running!");
+});
+
+app.use(RESTErrorHandler);
+
+server.listen(process.env.PORT || 3000, () => {
+    console.log(`Server Running on ${process.env.PORT || 3000}`);
 });
