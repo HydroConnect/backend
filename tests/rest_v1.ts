@@ -7,6 +7,7 @@ import { readingsModel, zReadings } from "../schemas/models/readings.js";
 import { summariesModel, zSummaries } from "../schemas/models/summaries.js";
 import { readFileSync } from "fs";
 import { createHash, randomBytes } from "crypto";
+import { getMidnightDate } from "../controllers/rest.js";
 
 dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
 
@@ -61,6 +62,8 @@ describe("GET /summary", () => {
                 zSummaries.parse(data[i]);
             }
         }).not.toThrow();
+        expect(data[0].timestamp).toEqual(getMidnightDate(new Date()).toISOString());
+        expect(data[0].uptime).toEqual(0);
     });
 });
 
@@ -103,5 +106,7 @@ describe("POST /readings", () => {
         expect(new Date(data.timestamp) > READINGS_ARR[READINGS_ARR.length - 1]!.timestamp).toEqual(
             true
         );
+        const summaryData = JSON.parse((await myaxios.get("/summary")).data);
+        expect(summaryData[0].uptime).toEqual(2);
     });
 });
