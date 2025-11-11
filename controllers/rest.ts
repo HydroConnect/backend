@@ -12,13 +12,33 @@ import { getIO } from "./io.js";
 import { ZodError } from "zod";
 
 const restRouter = Router();
+let summaryLastEntry: string | undefined = undefined;
+
+function getMidnightDate(date: Date): Date {
+    date.setUTCHours(0, 0, 0, 1);
+    return date;
+}
+
+async function populateTodaySummary() {
+    const nowMidnight = getMidnightDate(new Date());
+    const nowMidISO = nowMidnight.toISOString();
+    if (summaryLastEntry === nowMidISO) {
+        return;
+    }
+    const summary = await summariesModel.findOne().sort({ timestamp: -1 });
+    if (!summary || summary.timestamp.toISOString() !== nowMidISO) {
+        // Add today's date
+        await new summariesModel({
+            uptime: 0,
+            timestamp: nowMidnight,
+        }).save();
+        summaryLastEntry = nowMidISO;
+    }
+}
 
 restRouter.get("/summary", async (req: Request, res: Response) => {
-    const summary = await summariesModel
-        .find()
-        .sort({ timestamp: 1 })
-        .limit(7)
-        .sort({ timestamp: -1 });
+    await populateTodaySummary();
+    const summary = await summariesModel.find().sort({ timestamp: -1 }).limit(7);
     res.status(200).json(filterMongo(summary));
 });
 
@@ -29,6 +49,7 @@ restRouter.get("/latest", async (req: Request, res: Response) => {
 
 restRouter.post("/readings", async (req: Request, res: Response) => {
     try {
+        await populateTodaySummary();
         req.body = zIoTPayload.parse(req.body);
         if (!validateIoT(req.body as iIoTPayload)) {
             throw new HttpError(403);
@@ -42,6 +63,11 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
 
         getIO().of("/io/v1").emit("readings", payload);
         await new readingsModel(payload).save();
+
+        // Update Uptime
+        const summary = await summariesModel.findOne().sort({ timestamp: -1 });
+        summary!.uptime += 2;
+        await summary!.save();
 
         res.status(200).json(true);
     } catch (err) {
