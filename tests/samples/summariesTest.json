@@ -1,107 +1,22 @@
 [
     {
         "timestamp": "2025-10-22T01:32:11.055Z",
-        "min": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.037Z",
-            "control": 17
-        },
-        "max": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.043Z",
-            "control": 17
-        }
+        "uptime": 3600
     },
     {
         "timestamp": "2025-10-22T01:32:11.057Z",
-        "min": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.043Z",
-            "control": 17
-        },
-        "max": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.045Z",
-            "control": 17
-        }
+        "uptime": 3600
     },
     {
         "timestamp": "2025-10-22T01:32:11.058Z",
-        "min": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.045Z",
-            "control": 17
-        },
-        "max": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.046Z",
-            "control": 17
-        }
+        "uptime": 3600
     },
     {
         "timestamp": "2025-10-22T01:32:11.059Z",
-        "min": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.046Z",
-            "control": 17
-        },
-        "max": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.047Z",
-            "control": 17
-        }
+        "uptime": 3600
     },
     {
         "timestamp": "2025-10-22T01:32:11.060Z",
-        "min": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.047Z",
-            "control": 17
-        },
-        "max": {
-            "turbidity": 10,
-            "pH": 7,
-            "tds": 6,
-            "temperature": 10,
-            "percent": 0.5,
-            "timestamp": "2025-10-22T01:32:11.048Z",
-            "control": 17
-        }
+        "uptime": 3600
     }
 ]

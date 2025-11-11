@@ -14,7 +14,11 @@ import { ZodError } from "zod";
 const restRouter = Router();
 
 restRouter.get("/summary", async (req: Request, res: Response) => {
-    const summary = await summariesModel.find().limit(7);
+    const summary = await summariesModel
+        .find()
+        .sort({ timestamp: 1 })
+        .limit(7)
+        .sort({ timestamp: -1 });
     res.status(200).json(filterMongo(summary));
 });
 
