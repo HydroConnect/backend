@@ -14,7 +14,7 @@ import { ZodError } from "zod";
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
 
-function getMidnightDate(date: Date): Date {
+export function getMidnightDate(date: Date): Date {
     date.setUTCHours(0, 0, 0, 1);
     return date;
 }
@@ -32,6 +32,10 @@ async function populateTodaySummary() {
             uptime: 0,
             timestamp: nowMidnight,
         }).save();
+        if (process.env.NODE_ENV !== "production") {
+            summaryLastEntry = undefined;
+            return;
+        }
         summaryLastEntry = nowMidISO;
     }
 }
@@ -65,9 +69,12 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
         await new readingsModel(payload).save();
 
         // Update Uptime
-        const summary = await summariesModel.findOne().sort({ timestamp: -1 });
-        summary!.uptime += 2;
-        await summary!.save();
+        await summariesModel.updateMany(
+            { timestamp: summaryLastEntry || getMidnightDate(new Date()).toISOString() },
+            {
+                $inc: { timestamp: 2 },
+            }
+        );
 
         res.status(200).json(true);
     } catch (err) {
