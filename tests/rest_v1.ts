@@ -36,10 +36,16 @@ beforeAll(async () => {
         READINGS_ARR.push(new readingsModel(data));
         await READINGS_ARR[READINGS_ARR.length - 1]!.save();
     }
+
+    let nowTimestamp = getMidnightDate(new Date());
+    nowTimestamp.setUTCDate(nowTimestamp.getDate() - summariesData.length - 2);
     for (let i = 0; i < summariesData.length; i++) {
         const data = summariesData[i];
+        data.timestamp = nowTimestamp;
         SUMMARIES_ARR.push(new summariesModel(data));
         await SUMMARIES_ARR[SUMMARIES_ARR.length - 1]!.save();
+
+        nowTimestamp.setUTCDate(nowTimestamp.getDate() + 1);
     }
 });
 
@@ -64,6 +70,7 @@ describe("GET /summary", () => {
         }).not.toThrow();
         expect(data[0].timestamp).toEqual(getMidnightDate(new Date()).toISOString());
         expect(data[0].uptime).toEqual(0);
+        expect(data.length).toEqual(7);
     });
 });
 
