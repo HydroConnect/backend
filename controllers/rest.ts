@@ -1,8 +1,7 @@
 import type { Request, Response } from "express";
 
 import { Router } from "express";
-import { summariesModel } from "../schemas/models/summaries.js";
-import { filterMongo } from "../lib/filterMongo.js";
+import { summariesModel, type iSummaries } from "../schemas/models/summaries.js";
 import { readingsModel, type iReadings } from "../schemas/models/readings.js";
 import { zIoTPayload, type iIoTPayload } from "../schemas/IoTPayload.js";
 import { chemFormula } from "../lib/chemFormula.js";
@@ -41,14 +40,42 @@ async function populateTodaySummary() {
 }
 
 restRouter.get("/summary", async (req: Request, res: Response) => {
-    await populateTodaySummary();
-    const summary = await summariesModel.find().sort({ timestamp: -1 }).limit(7);
-    res.status(200).json(filterMongo(summary));
+    const earliestDate = getMidnightDate(new Date());
+    earliestDate.setUTCDate(earliestDate.getDate() - 7);
+    const summary = await summariesModel.find(
+        { timestamp: { $gt: earliestDate } },
+        { __v: 0, _id: 0 }
+    );
+    const output: any[] = [];
+
+    let idx = summary.length - 1;
+    for (let i = 0; i < 7; i++) {
+        if (summary.length === 7) {
+            output.push(summary[idx]!.toJSON());
+            idx--;
+        } else {
+            let supposedDatetime = new Date();
+            supposedDatetime.setUTCDate(supposedDatetime.getDate() - i);
+            supposedDatetime = getMidnightDate(supposedDatetime);
+            if (
+                idx >= 0 &&
+                summary[idx]!.timestamp.toISOString() === supposedDatetime.toISOString()
+            ) {
+                output.push(summary[idx]!.toJSON());
+                idx--;
+            } else {
+                output.push({ timestamp: supposedDatetime, uptime: 0 });
+            }
+        }
+    }
+
+    // Output is already projected with _id and __v
+    res.status(200).json(output);
 });
 
 restRouter.get("/latest", async (req: Request, res: Response) => {
-    const reading = await readingsModel.findOne().sort({ timestamp: "desc" });
-    res.status(200).json(filterMongo(reading));
+    const reading = await readingsModel.findOne({}, { _id: 0, __v: 0 }).sort({ timestamp: "desc" });
+    res.status(200).json(reading);
 });
 
 restRouter.post("/readings", async (req: Request, res: Response) => {
@@ -69,10 +96,14 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
         await new readingsModel(payload).save();
 
         // Update Uptime
-        await summariesModel.updateMany(
-            { timestamp: summaryLastEntry || getMidnightDate(new Date()).toISOString() },
+        await summariesModel.updateOne(
             {
-                $inc: { timestamp: 2 },
+                timestamp: summaryLastEntry
+                    ? new Date(summaryLastEntry!)
+                    : getMidnightDate(new Date()),
+            },
+            {
+                $inc: { uptime: 2 },
             }
         );
 
