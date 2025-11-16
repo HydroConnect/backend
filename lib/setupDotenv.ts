@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "./.d.env" });
+if(process.env.NODE_ENV !== "production") {
+    dotenv.config({ path: "./.d.env" });
+}
 
 export {};
