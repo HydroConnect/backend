@@ -34,6 +34,7 @@ export class HttpError extends Error {
                 break;
             case 5:
                 this.cause = "Server Error";
+                break ;
             default:
                 this.cause = STATUS_CODES[statusCode];
                 break;
