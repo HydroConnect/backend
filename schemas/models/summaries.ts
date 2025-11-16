@@ -1,23 +1,19 @@
 import { model, Schema } from "mongoose";
-import { readingsSchema, zReadings, type iReadings } from "./readings.js";
 import * as z from "zod";
 
 interface iSummaries {
-    min: iReadings;
-    max: iReadings;
-    timestamp: string;
+    uptime: number; // In seconds
+    timestamp: string; // Is always set to midnight 00.01
 }
 
 const zSummaries = z.strictObject({
-    min: zReadings,
-    max: zReadings,
+    uptime: z.number().gte(0),
     timestamp: z.iso.datetime(),
 });
 
 const summariesSchema = new Schema({
-    min: { type: readingsSchema, required: true },
-    max: { type: readingsSchema, required: true },
-    timestamp: { type: Date, required: true, immutable: true, default: Date.now },
+    uptime: { type: Number, required: true, default: 0 },
+    timestamp: { type: Date, required: true, immutable: true },
 });
 
 summariesSchema.index({ timestamp: 1 }, { unique: true });

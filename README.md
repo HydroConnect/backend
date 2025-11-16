@@ -7,17 +7,17 @@ The system is designed with **versioned endpoints**, **independent versioning fo
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Project Structure](#project-structure)
-3. [API Versioning](#api-versioning)
-4. [Data Schemas](#data-schemas)
-5. [REST API](#rest-api)
-6. [Socket.IO API](#socketio-api)
-7. [Environment Configuration](#environment-configuration)
-8. [Testing](#testing)
-9. [Development](#development)
-10. [Error Handling](#error-handling)
-11. [License](#license)
+1. Overview
+2. Project Structure
+3. API Versioning
+4. Data Schemas
+5. REST API
+6. Socket.IO API
+7. Environment Configuration
+8. Testing
+9. Development
+10. Error Handling
+11. License
 
 ---
 
@@ -115,9 +115,9 @@ zIoTPayload = z.strictObject({
 
 **Fields:**
 
-| Field      | Type                                     | Description                                   |     |
-| ---------- | ---------------------------------------- | --------------------------------------------- | --- |
-| `key`      | `string`                                 | SHA-512 hashed authentication key.            |     |
+| Field      | Type                                     | Description                                   |
+| ---------- | ---------------------------------------- | --------------------------------------------- |
+| `key`      | `string`                                 | SHA-512 hashed authentication key.            |
 | `readings` | `Omit<iReadings,"timestamp"\|"percent">` | Reading data excluding timestamp and percent. |
 
 ---
@@ -192,29 +192,26 @@ const zReadings = z.strictObject({
 
 ### `Summaries`
 
-Schema representing summary data derived from readings.
+Schema representing uptime and timestamp summary.
 
 ```ts
 interface iSummaries {
-    min: iReadings;
-    max: iReadings;
-    timestamp: string;
+    uptime: number; // In seconds
+    timestamp: string; // Is always set to midnight 00.01
 }
 
 const zSummaries = z.strictObject({
-    min: zReadings,
-    max: zReadings,
+    uptime: z.number().gte(0),
     timestamp: z.iso.datetime(),
 });
 ```
 
 **Fields:**
 
-| Field       | Type           | Description                              |
-| ----------- | -------------- | ---------------------------------------- |
-| `min`       | `Readings`     | Minimum recorded readings.               |
-| `max`       | `Readings`     | Maximum recorded readings.               |
-| `timestamp` | `ISO datetime` | Timestamp when the summary was computed. |
+| Field       | Type           | Description                     |
+| ----------- | -------------- | ------------------------------- |
+| `uptime`    | `number`       | System uptime in seconds.       |
+| `timestamp` | `ISO datetime` | Always set to midnight (00:01). |
 
 ---
 
@@ -358,7 +355,7 @@ The project includes comprehensive test cases for all available endpoints.
 **Test coverage includes:**
 
 -   REST `/summary`, `/latest`, and `/readings` endpoints.
--   IO `readings`, `download-request`, `download-data`, and `download-finish`, `error` events.
+-   IO `readings`, `download-request`, `download-data`, `download-finish`, and `error` events.
 
 ---
 
@@ -385,14 +382,8 @@ npm run build  # (Lint and then Build)
 There is a custom `HttpError` class for HTTP-related errors with a `status` property and `IOError` with `IOErrorEnum` for IO-related errors.
 The system also includes two dedicated handlers:
 
--   `RESTErrorHandler` for REST endpoints (e.g. 400 for invalid request body, 500 for any unknown error)
--   `IOErrorHandler` for Socket.IO events (i.e. Sent `error` events)
-
----
-
-### Developer Note
-
-Wath out for variable `tracker` in `io.ts` as it could lead to memory leak for many connections. (Solution: Limit Socket.IO connection when scaling)
+-   `RESTErrorHandler` for REST endpoints (e.g., 400 for invalid request body, 500 for any unknown error)
+-   `IOErrorHandler` for Socket.IO events (i.e., sent as `error` events)
 
 ---
 

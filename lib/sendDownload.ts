@@ -1,7 +1,6 @@
 import type { Socket } from "socket.io";
 import type { iDownloadRequest } from "../schemas/downloadRequest.js";
 import { readingsModel } from "../schemas/models/readings.js";
-import { filterMongo } from "./filterMongo.js";
 import { IOErrorHandler } from "./errorHandler.js";
 
 export async function sendDownload(
@@ -10,12 +9,15 @@ export async function sendDownload(
 ): Promise<void> {
     try {
         const readings = await readingsModel
-            .find({
-                timestamp: {
-                    $gte: new Date(downloadRequest.from),
-                    $lte: new Date(downloadRequest.to),
+            .find(
+                {
+                    timestamp: {
+                        $gte: new Date(downloadRequest.from),
+                        $lte: new Date(downloadRequest.to),
+                    },
                 },
-            })
+                { _id: 0, __v: 0 }
+            )
             .limit(parseInt(process.env.DOWNLOAD_CHUNK_N_SIZE!));
 
         if (readings.length === 0) {
@@ -23,7 +25,7 @@ export async function sendDownload(
             return;
         }
 
-        socket.emit("download-data", filterMongo(readings), downloadRequest.downloadId, () => {
+        socket.emit("download-data", readings, downloadRequest.downloadId, () => {
             // This callback is for acknowledgement to continue sending
 
             const nextCall = () => {
