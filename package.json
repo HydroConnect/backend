@@ -7,7 +7,7 @@
     "scripts": {
         "start": "tsc && node ./dist/server.js",
         "lint": "eslint controllers lib schemas server.ts",
-        "build": "npm run lint && npm run start",
+        "localBuild": "npm run lint && npm run start",
         "dev": "tsx --watch ./server.ts",
         "test": "vitest"
     },
