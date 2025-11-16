@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 
 import { Router } from "express";
-import { summariesModel, type iSummaries } from "../schemas/models/summaries.js";
+import { summariesModel } from "../schemas/models/summaries.js";
 import { readingsModel, type iReadings } from "../schemas/models/readings.js";
 import { zIoTPayload, type iIoTPayload } from "../schemas/IoTPayload.js";
 import { chemFormula } from "../lib/chemFormula.js";

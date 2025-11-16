@@ -10,9 +10,6 @@ export default defineConfig([
         extends: ["js/recommended"],
         languageOptions: {
             globals: globals.browser,
-            parserOption: {
-                tsconfigRootDir: import.meta.dirname,
-            },
         },
     },
     tseslint.configs.recommended,
