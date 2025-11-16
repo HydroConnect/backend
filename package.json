@@ -5,9 +5,9 @@
     "main": "server.ts",
     "type": "module",
     "scripts": {
-        "start": "tsc && node ./dist/server.js",
+        "start": "node ./dist/server.js",
         "lint": "eslint controllers lib schemas server.ts",
-        "localBuild": "npm run lint && npm run start",
+        "build": "npm run lint && tsc",
         "dev": "tsx --watch ./server.ts",
         "test": "vitest"
     },
