@@ -37,7 +37,7 @@ beforeAll(async () => {
         await READINGS_ARR[READINGS_ARR.length - 1]!.save();
     }
 
-    let nowTimestamp = getMidnightDate(new Date());
+    const nowTimestamp = getMidnightDate(new Date());
     nowTimestamp.setUTCDate(nowTimestamp.getDate() - summariesData.length - 2);
     for (let i = 0; i < summariesData.length; i++) {
         const data = summariesData[i];
