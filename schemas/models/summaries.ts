@@ -3,7 +3,7 @@ import * as z from "zod";
 
 interface iSummaries {
     uptime: number; // In seconds
-    timestamp: string; // Is always set to midnight 00.00
+    timestamp: string; // Is always set to midnight 00.01
 }
 
 const zSummaries = z.strictObject({
@@ -13,7 +13,7 @@ const zSummaries = z.strictObject({
 
 const summariesSchema = new Schema({
     uptime: { type: Number, required: true, default: 0 },
-    timestamp: { type: Date, required: true, immutable: true, default: Date.now },
+    timestamp: { type: Date, required: true, immutable: true },
 });
 
 summariesSchema.index({ timestamp: 1 }, { unique: true });
