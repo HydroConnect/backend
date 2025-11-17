@@ -161,7 +161,7 @@ interface iReadings {
     tds: number;
     temperature: number; // Degree Celcius
     control: number; // For control info MSB --> LSB (valve, sensor, distribution, resservoir, tank)
-    percent: number; // Percent from formula
+    percent: number; // Percent from formula (ex: 100, 50, 0)
     timestamp: string;
 }
 
