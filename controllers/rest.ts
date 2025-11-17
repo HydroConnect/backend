@@ -109,7 +109,6 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
 
         res.status(200).json(true);
     } catch (err) {
-        console.log(err);
         if (err instanceof ZodError) {
             throw new HttpError(400);
         } else if (err instanceof HttpError) {
