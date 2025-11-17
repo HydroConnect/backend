@@ -167,5 +167,5 @@ export function chemFormula(readings: iIoTPayload["readings"]): number {
         score += weights[keys[i]!] * value[keys[i]!];
     }
 
-    return round(score, 2);
+    return Math.max(Math.min(100, round(score, 2)), 0);
 }
