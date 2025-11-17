@@ -159,9 +159,9 @@ interface iReadings {
     turbidity: number;
     pH: number;
     tds: number;
-    temperature: number;
-    control: number;
-    percent: number;
+    temperature: number; // Degree Celcius
+    control: number; // For control info MSB --> LSB (valve, sensor, distribution, resservoir, tank)
+    percent: number; // Percent from formula
     timestamp: string;
 }
 

@@ -25,9 +25,9 @@ const readingsSchema = new Schema({
     turbidity: { type: Number, required: true },
     pH: { type: Number, required: true },
     tds: { type: Number, required: true },
-    temperature: { type: Number, required: true }, // Degree Celcius,
+    temperature: { type: Number, required: true }, // Degree Celcius
     control: { type: Number, required: true }, // For control info MSB --> LSB (valve, sensor, distribution, resservoir, tank)
-    percent: { type: Number, required: true }, // Percent from formula,
+    percent: { type: Number, required: true }, // Percent from formula
     timestamp: { type: Date, required: true, immutable: true, default: Date.now },
 });
 
