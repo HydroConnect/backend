@@ -12,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
 const READINGS_ARR = [];
 const SUMMARIES_ARR = [];
 const dummyIoTPayload = {
-    readings: { pH: 7, tds: 6, temperature: 10, turbidity: 10, control: 13 },
+    readings: { pH: 7.2, tds: 120, temperature: 24, turbidity: 0.8, control: 31 },
     key: process.env.IOT_KEY,
 };
 beforeAll(async () => {
@@ -26,7 +26,7 @@ beforeAll(async () => {
         READINGS_ARR.push(new readingsModel(data));
         await READINGS_ARR[READINGS_ARR.length - 1].save();
     }
-    let nowTimestamp = getMidnightDate(new Date());
+    const nowTimestamp = getMidnightDate(new Date());
     nowTimestamp.setUTCDate(nowTimestamp.getDate() - summariesData.length - 2);
     for (let i = 0; i < summariesData.length; i++) {
         const data = summariesData[i];
@@ -88,5 +88,10 @@ describe("POST /readings", () => {
         expect(new Date(data.timestamp) > READINGS_ARR[READINGS_ARR.length - 1].timestamp).toEqual(true);
         const summaryData = JSON.parse((await myaxios.get("/summary")).data);
         expect(summaryData[0].uptime).toEqual(2);
+    });
+    it("Chem Formula is right", async () => {
+        await myaxios.post("/readings", JSON.stringify(dummyIoTPayload));
+        const data = JSON.parse((await myaxios.get("/latest")).data);
+        expect(data.percent).toEqual(100);
     });
 });
