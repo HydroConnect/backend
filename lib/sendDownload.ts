@@ -38,7 +38,7 @@ export async function sendDownload(
                 });
             };
 
-            if (process.env.NODE_ENV === "development") {
+            if (process.env.NODE_ENV !== "production") {
                 setTimeout(nextCall, 1000);
             } else {
                 nextCall();

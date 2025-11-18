@@ -103,7 +103,7 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
                     : getMidnightDate(new Date()),
             },
             {
-                $inc: { uptime: 2 },
+                $inc: { uptime: parseInt(process.env.IOT_INTERVAL_MS!) / 1000 },
             }
         );
 
