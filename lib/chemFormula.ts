@@ -145,10 +145,10 @@ export function chemFormula(readings: iIoTPayload["readings"]): number {
 
     const keys = Object.keys(weights) as (keyof ScoreObject)[];
 
-    // IF LOW_VOLTAGE
-    if ((readings.control >> 3) & 1) {
+    // IF SENSOR_ERROR
+    if (((readings.control >> 3) & 1) === 0) {
         for (let i = 0; i < keys.length; i++) {
-            weights[keys[i]!] *= 0.7;
+            weights[keys[i]!]! = 0;
         }
     }
 
