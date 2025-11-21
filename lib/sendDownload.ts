@@ -25,25 +25,33 @@ export async function sendDownload(
             return;
         }
 
-        socket.emit("download-data", readings, downloadRequest.downloadId, () => {
-            // This callback is for acknowledgement to continue sending
+        socket.emit(
+            "download-data",
+            readings,
+            downloadRequest.downloadId,
+            (isContinue: boolean) => {
+                // This callback is for acknowledgement to continue sending
+                if (!isContinue) {
+                    return;
+                }
 
-            const nextCall = () => {
-                sendDownload(socket, {
-                    from: new Date(
-                        readings[readings.length - 1]!.timestamp.getTime() + 1
-                    ).toISOString(),
-                    to: downloadRequest.to,
-                    downloadId: downloadRequest.downloadId,
-                });
-            };
+                const nextCall = () => {
+                    sendDownload(socket, {
+                        from: new Date(
+                            readings[readings.length - 1]!.timestamp.getTime() + 1
+                        ).toISOString(),
+                        to: downloadRequest.to,
+                        downloadId: downloadRequest.downloadId,
+                    });
+                };
 
-            if (process.env.NODE_ENV !== "production") {
-                setTimeout(nextCall, 1000);
-            } else {
-                nextCall();
+                if (process.env.NODE_ENV !== "production") {
+                    setTimeout(nextCall, 1000);
+                } else {
+                    nextCall();
+                }
             }
-        });
+        );
     } catch (err) {
         IOErrorHandler(err as Error, socket);
     }
