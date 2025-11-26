@@ -106,7 +106,7 @@ socket.on("readings", (data) => {
 socket.on("download-data", (readings, downloadId, ack) => {
     console.log("Data for " + downloadId);
     console.log(...readings);
-    ack();
+    ack(true);
 });
 socket.on("download-finish", (downloadId) => {
     console.log("Download for " + downloadId + " has finished!");
