@@ -1,10 +1,25 @@
 # prettier-ignore
-name: Test
+name: Lint and Test
 on:
   push:
     branches: main
 
 jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'latest'
+
+      - name: Install NPM Dependencies
+        run: npm i --production=false
+
+      - name: Code Linting
+        run: npm run lint
   testing:
     name: Testing
     runs-on: ubuntu-latest
@@ -13,7 +28,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: lts
+          node-version: 'latest'
 
       - name: Install NPM Dependencies
         run: npm i --production=false
