@@ -1,7 +1,8 @@
 # prettier-ignore
 name: Lint
-push:
-  branches: main
+on:
+  push:
+    branches: main
 
 jobs:
   linting:
