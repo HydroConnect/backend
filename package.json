@@ -5,7 +5,7 @@
     "main": "server.ts",
     "type": "module",
     "scripts": {
-        "build": "npm i && tsc",
+        "build": "npm i --production=false && tsc",
         "start": "node ./dist/server.js",
         "buildNRun": "npm run build && npm run start",
         "lint": "eslint controllers lib schemas server.ts",
