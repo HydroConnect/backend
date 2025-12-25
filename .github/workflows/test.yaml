@@ -1,0 +1,23 @@
+# prettier-ignore
+name: Test
+push:
+  branches: main
+
+jobs:
+  testing:
+    name: Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Install NPM Dependencies
+        run: npm i --production=false --force
+
+      - name: Running Instance
+        run: npm run dev
+        env: 
+          NODE_ENV: development
+
+      - name: Testing
+        run: npm run test

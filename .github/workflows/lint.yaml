@@ -1,0 +1,18 @@
+# prettier-ignore
+name: Lint
+push:
+  branches: main
+
+jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Install NPM Dependencies
+        run: npm i --production=false --force
+
+      - name: Code Linting
+        run: npm run lint
