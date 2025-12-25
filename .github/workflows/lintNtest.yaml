@@ -34,7 +34,9 @@ jobs:
         run: npm i --production=false
 
       - name: Running Instance
-        run: npm run dev
+        run: |
+          npm run dev &
+          echo $! > app.pid
         env: 
           NODE_ENV: development
           DB_URL: ${{ secrets.DB_URL }}
@@ -44,3 +46,7 @@ jobs:
         env:
           NODE_ENV: development
           DB_URL: ${{ secrets.DB_URL }}
+
+      - name: Stop app
+        if: always()
+        run: kill $(cat app.pid)
