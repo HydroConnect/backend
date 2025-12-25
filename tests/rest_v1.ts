@@ -15,7 +15,7 @@ const READINGS_ARR: InstanceType<typeof readingsModel>[] = [];
 const SUMMARIES_ARR: InstanceType<typeof summariesModel>[] = [];
 
 const dummyIoTPayload = {
-    readings: { pH: 7, tds: 6, temperature: 10, turbidity: 10, control: 13 },
+    readings: { pH: 7.2, tds: 120, temperature: 24, turbidity: 0.8, control: 31 },
     key: process.env.IOT_KEY,
 };
 
@@ -115,5 +115,11 @@ describe("POST /readings", () => {
         );
         const summaryData = JSON.parse((await myaxios.get("/summary")).data);
         expect(summaryData[0].uptime).toEqual(2);
+    });
+
+    it("Chem Formula is right", async () => {
+        await myaxios.post("/readings", JSON.stringify(dummyIoTPayload));
+        const data = JSON.parse((await myaxios.get("/latest")).data);
+        expect(data.percent).toEqual(100);
     });
 });

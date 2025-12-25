@@ -5,11 +5,13 @@
     "main": "server.ts",
     "type": "module",
     "scripts": {
+        "build": "npm i && tsc",
         "start": "node ./dist/server.js",
+        "buildNRun": "npm run build && npm run start",
         "lint": "eslint controllers lib schemas server.ts",
-        "build": "npm run lint && tsc",
-        "dev": "tsx --watch ./server.ts",
-        "test": "vitest"
+        "test": "vitest",
+        "testAll": "npm run lint && npm run test",
+        "dev": "tsx --watch ./server.ts"
     },
     "repository": {
         "type": "git",

@@ -161,7 +161,7 @@ interface iReadings {
     tds: number;
     temperature: number; // Degree Celcius
     control: number; // For control info MSB --> LSB (valve, sensor, distribution, resservoir, tank)
-    percent: number; // Percent from formula
+    percent: number; // Percent from formula (ex: 100, 50, 0)
     timestamp: string;
 }
 
@@ -334,6 +334,7 @@ The server behavior is controlled via environment variables defined in `.env`.
 | `NODE_ENV`                      | Application environment (e.g., `development`, `production`)                    | `development`                                                                            |
 | `IOT_KEY`                       | Secure hash key for IoT authentication                                         | `_49lFI-ngS-9eTp8enaRCMG6ZwLeQQaorZ_RgAvxBP4DtYoUvVokG9whNZ9khQw3OL00xnRnko08vnKtHfAbVA` |
 | `MIN_DOWNLOAD_INTERVAL_SECONDS` | Interval in which download request can be made after last request (in seconds) | `60`                                                                                     |
+| `IOT_INTERVAL_MS`               | Interval in which IoT data is sent (in ms)                                     | `2000`                                                                                   |
 
 When `NODE_ENV=development`, the following features are enabled:
 

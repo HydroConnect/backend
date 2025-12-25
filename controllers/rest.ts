@@ -12,6 +12,7 @@ import { ZodError } from "zod";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
+let latestReading: iReadings | null = null; // Cache for latest reading
 
 export function getMidnightDate(date: Date): Date {
     date.setUTCHours(0, 0, 0, 1);
@@ -74,8 +75,11 @@ restRouter.get("/summary", async (req: Request, res: Response) => {
 });
 
 restRouter.get("/latest", async (req: Request, res: Response) => {
-    const reading = await readingsModel.findOne({}, { _id: 0, __v: 0 }).sort({ timestamp: "desc" });
-    res.status(200).json(reading);
+    if (latestReading === null) {
+        // @ts-expect-error This is the same type ase the reading thing
+        latestReading = await readingsModel.findOne({}, { _id: 0, __v: 0 }).sort({ timestamp: "desc" });
+    }
+    res.status(200).json(latestReading);
 });
 
 restRouter.post("/readings", async (req: Request, res: Response) => {
@@ -92,6 +96,7 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
             percent: chemFormula((req.body as iIoTPayload).readings),
         };
 
+        latestReading = payload;
         getIO().of("/io/v1").emit("readings", payload);
         await new readingsModel(payload).save();
 
@@ -103,13 +108,12 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
                     : getMidnightDate(new Date()),
             },
             {
-                $inc: { uptime: 2 },
+                $inc: { uptime: parseInt(process.env.IOT_INTERVAL_MS!) / 1000 },
             }
         );
 
         res.status(200).json(true);
     } catch (err) {
-        console.log(err);
         if (err instanceof ZodError) {
             throw new HttpError(400);
         } else if (err instanceof HttpError) {
