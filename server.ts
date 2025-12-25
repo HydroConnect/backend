@@ -15,7 +15,16 @@ mongoose.connect(process.env.DB_URL!).then(() => {
     console.log("Mongoose Running!");
 });
 
-app.use(express.json());
+app.use(
+    express.json({
+        verify: (req, res, buf, encoding) => {
+            if (buf && buf.length) {
+                // @ts-expect-error This add a new property req.rawBody
+                req.rawBody = buf.toString(encoding || "utf8");
+            }
+        },
+    })
+);
 app.use("/rest/v1", restRouter);
 
 if (process.env.NODE_ENV === "development") {

@@ -9,6 +9,8 @@ import { validateIoT } from "../lib/validateIoT.js";
 import { HttpError } from "../lib/errorHandler.js";
 import { getIO } from "./io.js";
 import { ZodError } from "zod";
+import crypto from "crypto";
+import { exec } from "child_process";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
@@ -77,7 +79,9 @@ restRouter.get("/summary", async (req: Request, res: Response) => {
 restRouter.get("/latest", async (req: Request, res: Response) => {
     if (latestReading === null) {
         // @ts-expect-error This is the same type ase the reading thing
-        latestReading = await readingsModel.findOne({}, { _id: 0, __v: 0 }).sort({ timestamp: "desc" });
+        latestReading = await readingsModel
+            .findOne({}, { _id: 0, __v: 0 })
+            .sort({ timestamp: "desc" });
     }
     res.status(200).json(latestReading);
 });
@@ -122,6 +126,42 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
 
         throw new HttpError(500);
     }
+});
+
+restRouter.post("/github-webhook", (req: Request, res: Response) => {
+    // Validate Payload
+    const expectedHex = crypto
+        .createHmac("sha256", Buffer.from(process.env.GITHUB_WEBHOOK_SECRET!, "utf8"))
+        // @ts-expect-error This access the rawBody we define in our middleware
+        .update(Buffer.from(req.rawBody, "utf8"))
+        .digest("hex");
+
+    // Convert both to Buffers
+    const expected = Buffer.from(expectedHex, "hex");
+    const nowHeader = req.header("X-Hub-Signature-256");
+    if (nowHeader) {
+        const received = Buffer.from(nowHeader.split("sha256=")[1]!, "hex");
+
+        // Must be same length or timingSafeEqual throws
+        if (expected.length === received.length) {
+            if (
+                crypto.timingSafeEqual(expected, received) &&
+                req.body.repository.full_name === "HydroConnect/backend" &&
+                req.body.hook.events[0] === "push" &&
+                req.body.hook.type === "Repository"
+            ) {
+                res.status(200).json(true);
+                console.log("Updating Codebase!");
+                if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
+                    exec("sudo systemctl restart hydroconnect");
+                    process.exit(0);
+                }
+                return;
+            }
+        }
+    }
+
+    res.status(403).json("Unauthorized");
 });
 
 export { restRouter };
