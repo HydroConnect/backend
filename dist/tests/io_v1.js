@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import io from "socket.io-client";
 import { Axios } from "axios";
 import { zReadings } from "../schemas/models/readings.js";
-dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
+dotenv.config({ path: path.resolve(__dirname, "../.d.env"), override: false });
 const dummyIoTPayload = {
     readings: { pH: 7, tds: 6, temperature: 10, turbidity: 10, control: 13 },
     key: process.env.IOT_KEY,

@@ -8,7 +8,7 @@ import { summariesModel, zSummaries } from "../schemas/models/summaries.js";
 import { readFileSync } from "fs";
 import { createHash, randomBytes } from "crypto";
 import { getMidnightDate } from "../controllers/rest.js";
-dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
+dotenv.config({ path: path.resolve(__dirname, "../.d.env"), override: false });
 const READINGS_ARR = [];
 const SUMMARIES_ARR = [];
 const dummyIoTPayload = {

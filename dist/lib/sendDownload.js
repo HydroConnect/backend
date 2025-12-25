@@ -14,8 +14,11 @@ export async function sendDownload(socket, downloadRequest) {
             socket.emit("download-finish", downloadRequest.downloadId);
             return;
         }
-        socket.emit("download-data", readings, downloadRequest.downloadId, () => {
+        socket.emit("download-data", readings, downloadRequest.downloadId, (isContinue) => {
             // This callback is for acknowledgement to continue sending
+            if (!isContinue) {
+                return;
+            }
             const nextCall = () => {
                 sendDownload(socket, {
                     from: new Date(readings[readings.length - 1].timestamp.getTime() + 1).toISOString(),
@@ -23,7 +26,7 @@ export async function sendDownload(socket, downloadRequest) {
                     downloadId: downloadRequest.downloadId,
                 });
             };
-            if (process.env.NODE_ENV === "development") {
+            if (process.env.NODE_ENV !== "production") {
                 setTimeout(nextCall, 1000);
             }
             else {

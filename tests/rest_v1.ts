@@ -9,11 +9,7 @@ import { readFileSync } from "fs";
 import { createHash, randomBytes } from "crypto";
 import { getMidnightDate } from "../controllers/rest.js";
 
-const { DB_URL } = process.env;
-dotenv.config({ path: path.resolve(__dirname, "../.d.env") });
-if (DB_URL) {
-    process.env.DB_URL = DB_URL;
-}
+dotenv.config({ path: path.resolve(__dirname, "../.d.env"), override: false });
 
 const READINGS_ARR: InstanceType<typeof readingsModel>[] = [];
 const SUMMARIES_ARR: InstanceType<typeof summariesModel>[] = [];
