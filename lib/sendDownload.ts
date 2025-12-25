@@ -46,7 +46,7 @@ export async function sendDownload(
                 };
 
                 if (process.env.NODE_ENV !== "production") {
-                    setTimeout(nextCall, 1000);
+                    setTimeout(nextCall, 500);
                 } else {
                     nextCall();
                 }

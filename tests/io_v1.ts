@@ -52,12 +52,12 @@ describe("Downloads", () => {
         return new Promise((resolve) => {
             socket.on(
                 "download-data",
-                (readings: iReadings[], downloadId: string, ack: () => void) => {
+                (readings: iReadings[], downloadId: string, ack: (isContinue: boolean) => void) => {
                     expect(downloadId !== downloadRequestPayload.downloadId);
                     expect(() => {
                         zReadings.parse(readings[0]);
                     }).not.toThrow();
-                    ack();
+                    ack(true);
                 }
             );
 
@@ -77,6 +77,31 @@ describe("Downloads", () => {
                 resolve(true);
             });
             socket.emit("download-request", downloadRequestPayload);
+        });
+    });
+
+    it("Cancel on ack(false)", () => {
+        return new Promise((resolve) => {
+            socket.on(
+                "download-data",
+                (readings: iReadings[], downloadId: string, ack: (isContinue: boolean) => void) => {
+                    expect(downloadId !== downloadRequestPayload.downloadId);
+                    expect(() => {
+                        zReadings.parse(readings[0]);
+                    }).not.toThrow();
+                    ack(false);
+                }
+            );
+
+            socket.on("download-finish", () => {
+                expect(1).toBe(2);
+                resolve(false);
+            });
+
+            socket.emit("download-request", downloadRequestPayload);
+            setTimeout(() => {
+                resolve(true);
+            }, 2000);
         });
     });
 });
