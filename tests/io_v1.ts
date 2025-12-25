@@ -48,8 +48,9 @@ describe("EMIT readings", () => {
 });
 
 describe("Downloads", () => {
-    it("ON download-request + EMIT download-data (ack) + EMIT download-finish", () => {
+    it("ON download-request + EMIT download-data (ack) + EMIT download-finish + Reject consecutive downloads", () => {
         return new Promise((resolve) => {
+            let isError = false;
             socket.on(
                 "download-data",
                 (readings: iReadings[], downloadId: string, ack: (isContinue: boolean) => void) => {
@@ -61,21 +62,18 @@ describe("Downloads", () => {
                 }
             );
 
+            socket.on("error", (err: Error) => {
+                expect(err.name).toEqual("IOError");
+                isError = true;
+            });
+
             socket.on("download-finish", (downloadId: string) => {
                 expect(downloadId !== downloadRequestPayload.downloadId);
+                expect(isError).toEqual(true);
                 resolve(true);
             });
 
             socket.emit("download-request", downloadRequestPayload);
-        });
-    });
-
-    it("Rejects consecutive downloads", () => {
-        return new Promise((resolve) => {
-            socket.on("error", (err: Error) => {
-                expect(err.name).toEqual("IOError");
-                resolve(true);
-            });
             socket.emit("download-request", downloadRequestPayload);
         });
     });
@@ -101,7 +99,7 @@ describe("Downloads", () => {
             socket.emit("download-request", downloadRequestPayload);
             setTimeout(() => {
                 resolve(true);
-            }, 2000);
+            }, parseInt(process.env.MIN_DOWNLOAD_INTERVAL_SECONDS!) * 1000);
         });
     });
 });
