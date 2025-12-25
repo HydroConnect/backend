@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("Running!");
+    res.send("Running! (V1.2)");
 });
 
 app.use(RESTErrorHandler);
