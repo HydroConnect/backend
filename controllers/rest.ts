@@ -154,7 +154,6 @@ restRouter.post("/github-webhook", (req: Request, res: Response) => {
                 console.log("Updating Codebase!");
                 if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
                     exec("sudo systemctl restart hydroconnect");
-                    process.exit(0);
                 }
                 return;
             }
