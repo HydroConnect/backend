@@ -152,9 +152,7 @@ restRouter.post("/github-webhook", (req: Request, res: Response) => {
             if (expected.length === received.length) {
                 if (
                     crypto.timingSafeEqual(expected, received) &&
-                    req.body.repository.full_name === "HydroConnect/backend" &&
-                    req.body.hook.events[0] === "push" &&
-                    req.body.hook.type === "Repository"
+                    req.body.repository.full_name === "HydroConnect/backend"
                 ) {
                     res.status(200).json(true);
                     console.log("Updating Codebase!");
