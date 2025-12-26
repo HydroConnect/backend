@@ -129,45 +129,37 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
 });
 
 restRouter.post("/github-webhook", (req: Request, res: Response) => {
-    console.log("Webhook triggered!");
-    try {
-        // Validate Payload
-        const expectedHex = crypto
-            .createHmac("sha256", Buffer.from(process.env.GITHUB_WEBHOOK_SECRET!, "utf8"))
-            // @ts-expect-error This access the rawBody we define in our middleware
-            .update(Buffer.from(req.rawBody, "utf8"))
-            .digest("hex");
+    // Validate Payload
+    const expectedHex = crypto
+        .createHmac("sha256", Buffer.from(process.env.GITHUB_WEBHOOK_SECRET!, "utf8"))
+        // @ts-expect-error This access the rawBody we define in our middleware
+        .update(Buffer.from(req.rawBody, "utf8"))
+        .digest("hex");
 
-        console.log("Payload validated");
+    // Convert both to Buffers
+    const expected = Buffer.from(expectedHex, "hex");
+    const nowHeader = req.header("X-Hub-Signature-256");
+    if (nowHeader) {
+        const received = Buffer.from(nowHeader.split("sha256=")[1]!, "hex");
 
-        // Convert both to Buffers
-        const expected = Buffer.from(expectedHex, "hex");
-        const nowHeader = req.header("X-Hub-Signature-256");
-        if (nowHeader) {
-            const received = Buffer.from(nowHeader.split("sha256=")[1]!, "hex");
-
-            console.log("Header exist!");
-
-            // Must be same length or timingSafeEqual throws
-            if (expected.length === received.length) {
-                if (
-                    crypto.timingSafeEqual(expected, received) &&
-                    req.body.repository.full_name === "HydroConnect/backend"
-                ) {
-                    res.status(200).json(true);
-                    console.log("Updating Codebase!");
-                    if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
-                        exec("sudo systemctl restart hydroconnect");
-                    }
-                    return;
+        // Must be same length or timingSafeEqual throws
+        if (expected.length === received.length) {
+            if (
+                crypto.timingSafeEqual(expected, received) &&
+                req.body.repository.full_name === "HydroConnect/backend"
+            ) {
+                res.status(200).json(true);
+                console.log(`At ${Date.now()} Updating Codebase!`);
+                if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
+                    // Watch out this could be DANGEROUS!!!
+                    exec("sudo systemctl restart hydroconnect");
                 }
+                return;
             }
         }
-
-        res.status(403).json("Unauthorized");
-    } catch (err) {
-        console.error(err);
     }
+
+    res.status(403).json("Unauthorized");
 });
 
 export { restRouter };
