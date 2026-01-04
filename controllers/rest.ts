@@ -11,6 +11,10 @@ import { getIO } from "./io.js";
 import { ZodError } from "zod";
 import crypto from "crypto";
 import { exec } from "child_process";
+import { usageNotificationsModel } from "../schemas/models/usageNotifications.js";
+import { devicesModel, zDevices } from "../schemas/models/devices.js";
+import { sendNotification } from "../lib/notifications.js";
+import { Expo } from "expo-server-sdk";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
@@ -86,6 +90,7 @@ restRouter.get("/latest", async (req: Request, res: Response) => {
     res.status(200).json(latestReading);
 });
 
+let notificationTimeout: null | NodeJS.Timeout = null;
 restRouter.post("/readings", async (req: Request, res: Response) => {
     try {
         await populateTodaySummary();
@@ -116,6 +121,19 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
             }
         );
 
+        // Send Notification
+        if (notificationTimeout === null) {
+            // Send On
+            sendNotification(true);
+        } else {
+            clearTimeout(notificationTimeout);
+        }
+        notificationTimeout = setTimeout(() => {
+            // Send Off
+            sendNotification(false);
+            notificationTimeout = null;
+        }, parseInt(process.env.IOT_INTERVAL_TOLERANCE_MS!) + parseInt(process.env.IOT_INTERVAL_MS!));
+
         res.status(200).json(true);
     } catch (err) {
         if (err instanceof ZodError) {
@@ -126,6 +144,60 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
 
         throw new HttpError(500);
     }
+});
+
+restRouter.get("/notifications", async (req: Request, res: Response) => {
+    let latest: number | null = parseInt(req.query.latest as any);
+    const pagingLimit = parseInt(process.env.USAGE_NOTIFICATION_PAGING_LIMIT!);
+
+    let query = {};
+
+    if (Number.isNaN(latest)) {
+        latest = null;
+    } else {
+        query = {
+            notificationId: {
+                $lt: latest,
+                $gte: latest - pagingLimit,
+            },
+        };
+    }
+
+    const notifications = await usageNotificationsModel
+        .find(query, { __v: 0, _id: 0 })
+        .sort({ notificationId: -1 })
+        .limit(pagingLimit);
+
+    return res.json(notifications);
+});
+
+restRouter.post("/notifications/register", async (req: Request, res: Response) => {
+    try {
+        req.body = zDevices.parse(req.body);
+        if (!Expo.isExpoPushToken(req.body.token)) {
+            throw "Not Expo Push Token";
+        }
+    } catch {
+        throw new HttpError(400);
+    }
+    devicesModel.updateOne(
+        req.body,
+        { $setOnInsert: req.body },
+        { upsert: true, setDefaultsOnInsert: true }
+    );
+    res.status(200).json(true);
+});
+restRouter.post("/notifications/unregister", async (req: Request, res: Response) => {
+    try {
+        req.body = zDevices.parse(req.body);
+        if (!Expo.isExpoPushToken(req.body.token)) {
+            throw "Not Expo Push Token";
+        }
+    } catch {
+        throw new HttpError(400);
+    }
+    devicesModel.deleteOne(req.body);
+    res.status(200).json(true);
 });
 
 restRouter.post("/github-webhook", (req: Request, res: Response) => {
