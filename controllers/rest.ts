@@ -181,7 +181,7 @@ restRouter.post("/notifications/register", async (req: Request, res: Response) =
     } catch {
         throw new HttpError(400);
     }
-    devicesModel.updateOne(
+    await devicesModel.updateOne(
         req.body,
         { $setOnInsert: req.body },
         { upsert: true, setDefaultsOnInsert: true }
@@ -198,7 +198,7 @@ restRouter.post("/notifications/unregister", async (req: Request, res: Response)
     } catch {
         throw new HttpError(400);
     }
-    devicesModel.deleteOne(req.body);
+    await devicesModel.deleteOne(req.body);
     res.status(200).json(true);
 });
 

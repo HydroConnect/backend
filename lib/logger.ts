@@ -14,6 +14,10 @@ export const logger = winston.createLogger({
     transports: [new winston.transports.File({ filename: "log" })],
 });
 
+if (process.env.NODE_ENV !== "production") {
+    logger.add(new winston.transports.Console());
+}
+
 export const consoleLogger = winston.createLogger({
     level: "info",
     exitOnError: false,

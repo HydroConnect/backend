@@ -28,7 +28,7 @@ app.use(
 );
 app.use("/rest/v1", restRouter);
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV !== "production") {
     app.use(express.static("./public"));
 }
 

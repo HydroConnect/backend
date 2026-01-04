@@ -13,6 +13,7 @@ import {
     zUsageNotification,
 } from "../schemas/models/usageNotifications.js";
 import { devicesModel } from "../schemas/models/devices.js";
+import { idsModel } from "../schemas/models/ids.js";
 
 dotenv.config({ path: path.resolve(__dirname, "../.d.env"), override: false });
 
@@ -43,6 +44,7 @@ beforeAll(async () => {
     await summariesModel.deleteMany();
     await devicesModel.deleteMany();
     await usageNotificationsModel.deleteMany();
+    await idsModel.deleteMany();
 
     for (let i = 0; i < readingsData.length; i++) {
         const data = readingsData[i];
@@ -66,6 +68,10 @@ beforeAll(async () => {
         myModel.notificationId = i + 1;
         await myModel.save();
     }
+
+    await new idsModel({
+        notificationId: 9,
+    }).save();
 });
 
 afterAll(async () => {
