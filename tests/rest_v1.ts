@@ -14,6 +14,7 @@ import {
 } from "../schemas/models/usageNotifications.js";
 import { devicesModel } from "../schemas/models/devices.js";
 import { idsModel } from "../schemas/models/ids.js";
+import { zPanduanData, type iPanduanData } from "../schemas/panduanData.js";
 
 dotenv.config({ path: path.resolve(__dirname, "../.d.env"), override: false });
 
@@ -146,6 +147,17 @@ describe("POST /readings", () => {
         await myaxios.post("/readings", JSON.stringify(dummyIoTPayload));
         const data = JSON.parse((await myaxios.get("/latest")).data);
         expect(data.percent).toEqual(100);
+    });
+});
+
+describe("GET /panduan", () => {
+    it("Get panduan", async () => {
+        const data = JSON.parse((await myaxios.get("/panduan")).data);
+        expect(() => {
+            data.forEach((val: iPanduanData) => {
+                zPanduanData.parse(val);
+            });
+        }).not.toThrow();
     });
 });
 

@@ -16,6 +16,7 @@ import { devicesModel, zDevices } from "../schemas/models/devices.js";
 import { sendNotification } from "../lib/notifications.js";
 import { Expo } from "expo-server-sdk";
 import { logger } from "../lib/logger.js";
+import type { iPanduanData } from "../schemas/panduanData.js";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
@@ -200,6 +201,31 @@ restRouter.post("/notifications/unregister", async (req: Request, res: Response)
     }
     await devicesModel.deleteOne(req.body);
     res.status(200).json(true);
+});
+
+const myPanduanData: iPanduanData[] = [
+    {
+        title: "Cara Menyalakan Pompa",
+        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        steps: ["Lorem", "Ipsum"],
+    },
+    {
+        title: "Cara Memberihkan Filter",
+        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        steps: ["Lorem", "Ipsum"],
+    },
+    {
+        title: "Cara Merawat Panel Surya dan Alat Sensor",
+        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        steps: ["Lorem", "Ipsum"],
+    },
+];
+
+restRouter.get("/panduan", async (req: Request, res: Response) => {
+    res.status(200).json(myPanduanData);
 });
 
 restRouter.post("/github-webhook", (req: Request, res: Response) => {
