@@ -159,7 +159,7 @@ describe("GET /notifications", () => {
             (await myaxios.get("/notifications?latest=" + data1[data1.length - 1].notificationId))
                 .data
         );
-        expect(data1[0]).not.toEqual(data2[0]);
+        expect(data1[data1.length - 1]).not.toEqual(data2[0]);
     });
 });
 
