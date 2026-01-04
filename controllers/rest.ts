@@ -15,6 +15,7 @@ import { usageNotificationsModel } from "../schemas/models/usageNotifications.js
 import { devicesModel, zDevices } from "../schemas/models/devices.js";
 import { sendNotification } from "../lib/notifications.js";
 import { Expo } from "expo-server-sdk";
+import { logger } from "../lib/logger.js";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
@@ -187,6 +188,7 @@ restRouter.post("/notifications/register", async (req: Request, res: Response) =
     );
     res.status(200).json(true);
 });
+
 restRouter.post("/notifications/unregister", async (req: Request, res: Response) => {
     try {
         req.body = zDevices.parse(req.body);
@@ -221,7 +223,7 @@ restRouter.post("/github-webhook", (req: Request, res: Response) => {
                 req.body.repository.full_name === "HydroConnect/backend"
             ) {
                 res.status(200).json(true);
-                console.log(`At ${Date.now()} Updating Codebase!`);
+                logger.warn(`Updating Codebase!`);
                 if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
                     // Watch out this could be DANGEROUS!!!
                     exec("sudo systemctl restart hydroconnect");

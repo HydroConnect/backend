@@ -184,6 +184,17 @@ describe("POST /notifications/register", () => {
         const res = await devicesModel.find();
         expect(res.length === 1);
     });
+    it("Doesn't double", async () => {
+        const { status } = await myaxios.post(
+            "/notifications/register",
+            JSON.stringify({
+                token: dummyExpoToken,
+            })
+        );
+        expect(status).toEqual(200);
+        const res = await devicesModel.find();
+        expect(res.length === 1);
+    });
 });
 
 describe("POST /notifications/unregister", () => {

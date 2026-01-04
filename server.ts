@@ -6,13 +6,14 @@ import { createServer } from "http";
 import { initSocketIO } from "./controllers/io.js";
 import { restRouter } from "./controllers/rest.js";
 import { RESTErrorHandler } from "./lib/errorHandler.js";
+import { consoleLogger } from "./lib/logger.js";
 
 const app = express();
 const server = createServer(app);
 
 initSocketIO(server);
 mongoose.connect(process.env.DB_URL!).then(() => {
-    console.log("Mongoose Running!");
+    consoleLogger.info("Mongoose Running!");
 });
 
 app.use(
@@ -38,5 +39,5 @@ app.get("/", (req: Request, res: Response) => {
 app.use(RESTErrorHandler);
 
 server.listen(process.env.PORT || 3000, () => {
-    console.log(`Server Running on ${process.env.PORT || 3000}`);
+    consoleLogger.info(`Server Running on ${process.env.PORT || 3000}`);
 });
