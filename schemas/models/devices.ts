@@ -10,7 +10,7 @@ const zDevices = z.strictObject({
 });
 
 const devicesSchema = new Schema({
-    token: { type: String, required: true },
+    token: { type: String, required: true }, // i.e. "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]", from devices
 });
 
 devicesSchema.index({ token: 1 }, { unique: true });
