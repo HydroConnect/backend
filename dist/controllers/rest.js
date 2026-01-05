@@ -7,6 +7,13 @@ import { validateIoT } from "../lib/validateIoT.js";
 import { HttpError } from "../lib/errorHandler.js";
 import { getIO } from "./io.js";
 import { ZodError } from "zod";
+import crypto from "crypto";
+import { exec } from "child_process";
+import { usageNotificationsModel } from "../schemas/models/usageNotifications.js";
+import { devicesModel, zDevices } from "../schemas/models/devices.js";
+import { sendNotification } from "../lib/notifications.js";
+import { Expo } from "expo-server-sdk";
+import { logger } from "../lib/logger.js";
 const restRouter = Router();
 let summaryLastEntry = undefined;
 let latestReading = null; // Cache for latest reading
@@ -65,10 +72,13 @@ restRouter.get("/summary", async (req, res) => {
 restRouter.get("/latest", async (req, res) => {
     if (latestReading === null) {
         // @ts-expect-error This is the same type ase the reading thing
-        latestReading = await readingsModel.findOne({}, { _id: 0, __v: 0 }).sort({ timestamp: "desc" });
+        latestReading = await readingsModel
+            .findOne({}, { _id: 0, __v: 0 })
+            .sort({ timestamp: "desc" });
     }
     res.status(200).json(latestReading);
 });
+let notificationTimeout = null;
 restRouter.post("/readings", async (req, res) => {
     try {
         await populateTodaySummary();
@@ -92,6 +102,19 @@ restRouter.post("/readings", async (req, res) => {
         }, {
             $inc: { uptime: parseInt(process.env.IOT_INTERVAL_MS) / 1000 },
         });
+        // Send Notification
+        if (notificationTimeout === null) {
+            // Send On
+            sendNotification(true);
+        }
+        else {
+            clearTimeout(notificationTimeout);
+        }
+        notificationTimeout = setTimeout(() => {
+            // Send Off
+            sendNotification(false);
+            notificationTimeout = null;
+        }, parseInt(process.env.IOT_INTERVAL_TOLERANCE_MS) + parseInt(process.env.IOT_INTERVAL_MS));
         res.status(200).json(true);
     }
     catch (err) {
@@ -103,5 +126,103 @@ restRouter.post("/readings", async (req, res) => {
         }
         throw new HttpError(500);
     }
+});
+restRouter.get("/notifications", async (req, res) => {
+    let latest = parseInt(req.query.latest);
+    const pagingLimit = parseInt(process.env.USAGE_NOTIFICATION_PAGING_LIMIT);
+    let query = {};
+    if (Number.isNaN(latest)) {
+        latest = null;
+    }
+    else {
+        query = {
+            notificationId: {
+                $lt: latest,
+                $gte: latest - pagingLimit,
+            },
+        };
+    }
+    const notifications = await usageNotificationsModel
+        .find(query, { __v: 0, _id: 0 })
+        .sort({ notificationId: -1 })
+        .limit(pagingLimit);
+    return res.json(notifications);
+});
+restRouter.post("/notifications/register", async (req, res) => {
+    try {
+        req.body = zDevices.parse(req.body);
+        if (!Expo.isExpoPushToken(req.body.token)) {
+            throw "Not Expo Push Token";
+        }
+    }
+    catch {
+        throw new HttpError(400);
+    }
+    await devicesModel.updateOne(req.body, { $setOnInsert: req.body }, { upsert: true, setDefaultsOnInsert: true });
+    res.status(200).json(true);
+});
+restRouter.post("/notifications/unregister", async (req, res) => {
+    try {
+        req.body = zDevices.parse(req.body);
+        if (!Expo.isExpoPushToken(req.body.token)) {
+            throw "Not Expo Push Token";
+        }
+    }
+    catch {
+        throw new HttpError(400);
+    }
+    await devicesModel.deleteOne(req.body);
+    res.status(200).json(true);
+});
+const myPanduanData = [
+    {
+        title: "Cara Menyalakan Pompa",
+        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        steps: ["Lorem", "Ipsum"],
+    },
+    {
+        title: "Cara Memberihkan Filter",
+        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        steps: ["Lorem", "Ipsum"],
+    },
+    {
+        title: "Cara Merawat Panel Surya dan Alat Sensor",
+        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        steps: ["Lorem", "Ipsum"],
+    },
+];
+restRouter.get("/panduan", async (req, res) => {
+    res.status(200).json(myPanduanData);
+});
+restRouter.post("/github-webhook", (req, res) => {
+    // Validate Payload
+    const expectedHex = crypto
+        .createHmac("sha256", Buffer.from(process.env.GITHUB_WEBHOOK_SECRET, "utf8"))
+        // @ts-expect-error This access the rawBody we define in our middleware
+        .update(Buffer.from(req.rawBody, "utf8"))
+        .digest("hex");
+    // Convert both to Buffers
+    const expected = Buffer.from(expectedHex, "hex");
+    const nowHeader = req.header("X-Hub-Signature-256");
+    if (nowHeader) {
+        const received = Buffer.from(nowHeader.split("sha256=")[1], "hex");
+        // Must be same length or timingSafeEqual throws
+        if (expected.length === received.length) {
+            if (crypto.timingSafeEqual(expected, received) &&
+                req.body.repository.full_name === "HydroConnect/backend") {
+                res.status(200).json(true);
+                logger.warn(`Updating Codebase!`);
+                if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
+                    // Watch out this could be DANGEROUS!!!
+                    exec("sudo systemctl restart hydroconnect");
+                }
+                return;
+            }
+        }
+    }
+    res.status(403).json("Unauthorized");
 });
 export { restRouter };
