@@ -28,10 +28,12 @@
     "homepage": "https://github.com/HydroConnect/backend#readme",
     "dependencies": {
         "dotenv": "^17.2.3",
+        "expo-server-sdk": "^4.0.0",
         "express": "^5.1.0",
         "mongoose": "^8.19.1",
         "socket.io": "^4.8.1",
         "tsx": "^4.20.6",
+        "winston": "^3.19.0",
         "zod": "^4.1.12"
     },
     "devDependencies": {

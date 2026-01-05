@@ -5,8 +5,8 @@ const zSummaries = z.strictObject({
     timestamp: z.iso.datetime(),
 });
 const summariesSchema = new Schema({
-    uptime: { type: Number, required: true, default: 0 },
-    timestamp: { type: Date, required: true, immutable: true },
+    uptime: { type: Number, required: true, default: 0 }, // In seconds
+    timestamp: { type: Date, required: true, immutable: true }, // Is always set to midnight 00.01
 });
 summariesSchema.index({ timestamp: 1 }, { unique: true });
 const summariesModel = model("summaries", summariesSchema);

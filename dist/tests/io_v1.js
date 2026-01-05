@@ -40,29 +40,46 @@ describe("EMIT readings", () => {
     });
 });
 describe("Downloads", () => {
-    it("ON download-request + EMIT download-data (ack) + EMIT download-finish", () => {
+    it("ON download-request + EMIT download-data (ack) + EMIT download-finish + Reject consecutive downloads", () => {
+        return new Promise((resolve) => {
+            let isError = false;
+            socket.on("download-data", (readings, downloadId, ack) => {
+                expect(downloadId !== downloadRequestPayload.downloadId);
+                expect(() => {
+                    zReadings.parse(readings[0]);
+                }).not.toThrow();
+                ack(true);
+            });
+            socket.on("error", (err) => {
+                expect(err.name).toEqual("IOError");
+                isError = true;
+            });
+            socket.on("download-finish", (downloadId) => {
+                expect(downloadId !== downloadRequestPayload.downloadId);
+                expect(isError).toEqual(true);
+                resolve(true);
+            });
+            socket.emit("download-request", downloadRequestPayload);
+            socket.emit("download-request", downloadRequestPayload);
+        });
+    });
+    it("Cancel on ack(false)", () => {
         return new Promise((resolve) => {
             socket.on("download-data", (readings, downloadId, ack) => {
                 expect(downloadId !== downloadRequestPayload.downloadId);
                 expect(() => {
                     zReadings.parse(readings[0]);
                 }).not.toThrow();
-                ack();
+                ack(false);
             });
-            socket.on("download-finish", (downloadId) => {
-                expect(downloadId !== downloadRequestPayload.downloadId);
-                resolve(true);
-            });
-            socket.emit("download-request", downloadRequestPayload);
-        });
-    });
-    it("Rejects consecutive downloads", () => {
-        return new Promise((resolve) => {
-            socket.on("error", (err) => {
-                expect(err.name).toEqual("IOError");
-                resolve(true);
+            socket.on("download-finish", () => {
+                expect(1).toBe(2);
+                resolve(false);
             });
             socket.emit("download-request", downloadRequestPayload);
+            setTimeout(() => {
+                resolve(true);
+            }, parseInt(process.env.MIN_DOWNLOAD_INTERVAL_SECONDS) * 1000);
         });
     });
 });
