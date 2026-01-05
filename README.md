@@ -641,6 +641,8 @@ npm run test   # (Run Test Case --> Run this also to set mock data in database)
 npm run build  # (Lint and then Build)
 ```
 
+Add a new test if a new endpoint is added and make sure all test passed. To test run the instance (`npm run dev`) then on another terminal run (`npm run test`).
+
 ---
 
 ## Error Handling
@@ -655,7 +657,7 @@ The system also includes two dedicated handlers:
 
 ## Logging
 
-Logging use **Winston** package for asynchronous logging. There are 2 `loggers` ` that includes `Console` and transport 1 that doesn't. The `consoleLogger` is useful for logging to `journalctl` on Linux production server.
+Logging use **Winston** package for asynchronous logging. There are 2 `loggers` `that includes`Console`and transport 1 that doesn't. The`consoleLogger`is useful for logging to`journalctl` on Linux production server.
 
 **Don't ever use `console.log` for logging in production!**
 
