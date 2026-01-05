@@ -17,7 +17,7 @@ Hydroconnect API provides both **REST** and **Socket.IO (IO)** endpoints for int
 9. Development
 10. Error Handling
 11. Logging
-12. Github Actions
+12. Deployment
 13. License
 
 ---
@@ -657,15 +657,15 @@ The system also includes two dedicated handlers:
 
 ## Logging
 
-Logging use **Winston** package for asynchronous logging. There are 2 `loggers` `that includes`Console`and transport 1 that doesn't. The`consoleLogger`is useful for logging to`journalctl` on Linux production server.
+Logging use **Winston** package for asynchronous logging. There are 2 `loggers` ` that includes `Console` and transport 1 that doesn't. The `consoleLogger` is useful for logging to `journalctl` on Linux production server.
 
 **Don't ever use `console.log` for logging in production!**
 
 ---
 
-## Github Actions
+## Deployment
 
-There is 1 Github Actions called **lintNTest**. The name is self-explanatory.
+There is 1 Github Actions called **lintNTest**. The name is self-explanatory. For deploying just push to main and the server (if on) will update on its own, if adding any `.d.env` make sure to change the `.env` on production to. Make sure pushed commit has been tested (`npm run test`) and builded (`npm run build`). See also the Github Actions verdict on github to see if there are any errors.
 
 ## License
 
