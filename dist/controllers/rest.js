@@ -13,7 +13,7 @@ import { usageNotificationsModel } from "../schemas/models/usageNotifications.js
 import { devicesModel, zDevices } from "../schemas/models/devices.js";
 import { sendNotification } from "../lib/notifications.js";
 import { Expo } from "expo-server-sdk";
-import { logger } from "../lib/logger.js";
+import { consoleLogger } from "../lib/logger.js";
 const restRouter = Router();
 let summaryLastEntry = undefined;
 let latestReading = null; // Cache for latest reading
@@ -214,7 +214,7 @@ restRouter.post("/github-webhook", (req, res) => {
             if (crypto.timingSafeEqual(expected, received) &&
                 req.body.repository.full_name === "HydroConnect/backend") {
                 res.status(200).json(true);
-                logger.warn(`Updating Codebase!`);
+                consoleLogger.warn(`Updating Codebase!`);
                 if (process.env.NODE_ENV === "production" && process.env.IS_LINUX === "true") {
                     // Watch out this could be DANGEROUS!!!
                     exec("sudo systemctl restart hydroconnect");
