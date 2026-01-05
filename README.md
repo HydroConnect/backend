@@ -657,7 +657,7 @@ The system also includes two dedicated handlers:
 
 ## Logging
 
-Logging use **Winston** package for asynchronous logging. There are 2 `loggers` ` that includes `Console` and transport 1 that doesn't. The `consoleLogger` is useful for logging to `journalctl` on Linux production server.
+Logging use **Winston** package for asynchronous logging. There are 2 `loggers` that includes `Console` and transport 1 that doesn't. The `consoleLogger` is useful for logging to `journalctl` on Linux production server.
 
 **Don't ever use `console.log` for logging in production!**
 
@@ -666,6 +666,12 @@ Logging use **Winston** package for asynchronous logging. There are 2 `loggers` 
 ## Deployment
 
 There is 1 Github Actions called **lintNTest**. The name is self-explanatory. For deploying just push to main and the server (if on) will update on its own, if adding any `.d.env` make sure to change the `.env` on production to. Make sure pushed commit has been tested (`npm run test`) and builded (`npm run build`). See also the Github Actions verdict on github to see if there are any errors.
+
+On linux production server, we setup a **systemd** that is enabled and auto-retry indefinitely called `hydroconnect`. Thus starting / restarting / stopping / log can be done using `sudo systemctl [start / restart / stop] hydroconnect` and `sudo journalctl -u hydroconnect [-f]`. Currently, this **systemd** runs a premade script that:
+
+1. Revert all changes to latest commit
+2. Pull latest from main branch
+3. `npm run build` & `npm run start` using `NODE_ENV=production`
 
 ## License
 
