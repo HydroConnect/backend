@@ -673,6 +673,8 @@ On linux production server, we setup a **systemd** that is enabled and auto-retr
 2. Pull latest from main branch
 3. `npm run build` & `npm run start` using `NODE_ENV=production`
 
+The user that runs the program should have the command `sudo systemctl restart hydroconnect` be in **SUDOERS NO PASSWD**. Exact command can be seen in github webhook endpoint.
+
 ## License
 
 This project is proprietary and intended for internal use within the Hydroconnect ecosystem.
