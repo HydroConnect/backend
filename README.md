@@ -1,6 +1,6 @@
 # Hydroconnect API
 
-Hydroconnect API provides both **REST** and **Socket.IO (IO)** endpoints for interacting with IoT devices and retrieving sensor data. The system is designed with **versioned endpoints**, **independent versioning for REST and IO**, and **chunk-based data streaming** for efficient data transfer.
+Hydroconnect API provides both **REST** and **Socket.IO (IO)** endpoints for interacting with IoT devices and retrieving sensor data. The system is designed with **versioned endpoints**, **independent versioning for REST and IO**, and **chunk-based data streaming** for efficient data transfers.
 
 ---
 
