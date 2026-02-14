@@ -1,5 +1,6 @@
 import { STATUS_CODES } from "http";
 import { ZodError } from "zod";
+import { consoleLogger } from "./logger.js";
 export var IOErrorEnum;
 (function (IOErrorEnum) {
     IOErrorEnum[IOErrorEnum["TooManyDownloads"] = 0] = "TooManyDownloads";
@@ -49,6 +50,9 @@ export function RESTErrorHandler(err, req, res, next) {
             err = new HttpError(500);
         }
     }
+    if (process.env.NODE_ENV !== "production") {
+        consoleLogger.error(err);
+    }
     res.status(err.status).json(`${err.message}\nPossible cause: ${err.cause}`);
     return;
 }
@@ -64,6 +68,9 @@ export function IOErrorHandler(err, socket) {
             err.message = "Server Error";
             err.cause = "Server Error";
         }
+    }
+    if (process.env.NODE_ENV !== "production") {
+        consoleLogger.error(err);
     }
     socket.emit("error", {
         name: err.name,

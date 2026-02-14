@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { STATUS_CODES } from "http";
 import type { Socket } from "socket.io";
 import { ZodError } from "zod";
+import { consoleLogger } from "./logger.js";
 
 export enum IOErrorEnum {
     TooManyDownloads,
@@ -34,7 +35,7 @@ export class HttpError extends Error {
                 break;
             case 5:
                 this.cause = "Server Error";
-                break ;
+                break;
             default:
                 this.cause = STATUS_CODES[statusCode];
                 break;
@@ -54,6 +55,9 @@ export function RESTErrorHandler(err: Error, req: Request, res: Response, next: 
             err = new HttpError(500);
         }
     }
+    if (process.env.NODE_ENV !== "production") {
+        consoleLogger.error(err);
+    }
 
     res.status((err as HttpError).status).json(`${err.message}\nPossible cause: ${err.cause}`);
 
@@ -71,6 +75,9 @@ export function IOErrorHandler(err: Error, socket: Socket) {
             err.message = "Server Error";
             err.cause = "Server Error";
         }
+    }
+    if (process.env.NODE_ENV !== "production") {
+        consoleLogger.error(err);
     }
 
     socket.emit("error", {
