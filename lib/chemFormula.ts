@@ -145,22 +145,6 @@ export function chemFormula(readings: iIoTPayload["readings"]): number {
 
     const keys = Object.keys(weights) as (keyof ScoreObject)[];
 
-    // IF SENSOR_ERROR
-    if (((readings.control >> 3) & 1) === 0) {
-        for (let i = 0; i < keys.length; i++) {
-            weights[keys[i]!]! = 0;
-        }
-    }
-
-    // Normalize weights
-    let sumWeights = 0;
-    for (let i = 0; i < keys.length; i++) {
-        sumWeights += weights[keys[i]!]!;
-    }
-    for (let i = 0; i < keys.length; i++) {
-        weights[keys[i]!] = weights[keys[i]!] / sumWeights;
-    }
-
     // Count overall score
     let score = 0;
     for (let i = 0; i < keys.length; i++) {
