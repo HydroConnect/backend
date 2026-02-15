@@ -106,20 +106,6 @@ export function chemFormula(readings) {
         turbidity: 0.34,
     };
     const keys = Object.keys(weights);
-    // IF SENSOR_ERROR
-    if (((readings.control >> 3) & 1) === 0) {
-        for (let i = 0; i < keys.length; i++) {
-            weights[keys[i]] = 0;
-        }
-    }
-    // Normalize weights
-    let sumWeights = 0;
-    for (let i = 0; i < keys.length; i++) {
-        sumWeights += weights[keys[i]];
-    }
-    for (let i = 0; i < keys.length; i++) {
-        weights[keys[i]] = weights[keys[i]] / sumWeights;
-    }
     // Count overall score
     let score = 0;
     for (let i = 0; i < keys.length; i++) {
