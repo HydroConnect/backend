@@ -7,7 +7,6 @@ import { readingsModel, zReadings } from "../schemas/models/readings.js";
 import { summariesModel, zSummaries } from "../schemas/models/summaries.js";
 import { readFileSync } from "fs";
 import { createHash, randomBytes } from "crypto";
-import { getMidnightDate } from "../controllers/rest.js";
 import {
     usageNotificationsModel,
     zUsageNotification,
@@ -15,6 +14,7 @@ import {
 import { devicesModel } from "../schemas/models/devices.js";
 import { idsModel } from "../schemas/models/ids.js";
 import { zPanduanData, type iPanduanData } from "../schemas/panduanData.js";
+import { getMidnightDate } from "../lib/utils.js";
 
 dotenv.config({ path: path.resolve(__dirname, "../.d.env"), override: false });
 

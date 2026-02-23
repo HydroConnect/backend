@@ -16,3 +16,8 @@ export function getJam(date: Date): string {
         .format(date)
         .replace(":", ".");
 }
+
+export function getMidnightDate(date: Date): Date {
+    date.setUTCHours(0, 0, 0, 1);
+    return date;
+}

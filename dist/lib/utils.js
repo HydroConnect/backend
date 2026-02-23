@@ -15,3 +15,7 @@ export function getJam(date) {
         .format(date)
         .replace(":", ".");
 }
+export function getMidnightDate(date) {
+    date.setUTCHours(0, 0, 0, 1);
+    return date;
+}

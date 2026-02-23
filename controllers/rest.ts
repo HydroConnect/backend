@@ -17,15 +17,11 @@ import { sendNotification } from "../lib/notifications.js";
 import { Expo } from "expo-server-sdk";
 import { consoleLogger } from "../lib/logger.js";
 import type { iPanduanData } from "../schemas/panduanData.js";
+import { getMidnightDate } from "../lib/utils.js";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
 let latestReading: iReadings | null = null; // Cache for latest reading
-
-export function getMidnightDate(date: Date): Date {
-    date.setUTCHours(0, 0, 0, 1);
-    return date;
-}
 
 async function populateTodaySummary() {
     const nowMidnight = getMidnightDate(new Date());
@@ -130,11 +126,15 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
         } else {
             clearTimeout(notificationTimeout);
         }
-        notificationTimeout = setTimeout(() => {
-            // Send Off
-            sendNotification(false);
-            notificationTimeout = null;
-        }, parseInt(process.env.IOT_INTERVAL_TOLERANCE_MS!) + parseInt(process.env.IOT_INTERVAL_MS!));
+        notificationTimeout = setTimeout(
+            () => {
+                // Send Off
+                sendNotification(false);
+                notificationTimeout = null;
+            },
+            parseInt(process.env.IOT_INTERVAL_TOLERANCE_MS!) +
+                parseInt(process.env.IOT_INTERVAL_MS!)
+        );
 
         res.status(200).json(true);
     } catch (err) {

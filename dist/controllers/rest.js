@@ -14,13 +14,10 @@ import { devicesModel, zDevices } from "../schemas/models/devices.js";
 import { sendNotification } from "../lib/notifications.js";
 import { Expo } from "expo-server-sdk";
 import { consoleLogger } from "../lib/logger.js";
+import { getMidnightDate } from "../lib/utils.js";
 const restRouter = Router();
 let summaryLastEntry = undefined;
 let latestReading = null; // Cache for latest reading
-export function getMidnightDate(date) {
-    date.setUTCHours(0, 0, 0, 1);
-    return date;
-}
 async function populateTodaySummary() {
     const nowMidnight = getMidnightDate(new Date());
     const nowMidISO = nowMidnight.toISOString();
@@ -114,7 +111,8 @@ restRouter.post("/readings", async (req, res) => {
             // Send Off
             sendNotification(false);
             notificationTimeout = null;
-        }, parseInt(process.env.IOT_INTERVAL_TOLERANCE_MS) + parseInt(process.env.IOT_INTERVAL_MS));
+        }, parseInt(process.env.IOT_INTERVAL_TOLERANCE_MS) +
+            parseInt(process.env.IOT_INTERVAL_MS));
         res.status(200).json(true);
     }
     catch (err) {
