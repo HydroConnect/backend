@@ -21,7 +21,7 @@ import { getMidnightDate } from "../lib/utils.js";
 
 const restRouter = Router();
 let summaryLastEntry: string | undefined = undefined;
-let latestReading: iReadings | null = null; // Cache for latest reading
+let latestReading: { readings: iReadings; cachedTime: number } | null = null; // Cache for latest reading
 
 async function populateTodaySummary() {
     const nowMidnight = getMidnightDate(new Date());
@@ -79,11 +79,21 @@ restRouter.get("/summary", async (req: Request, res: Response) => {
 });
 
 restRouter.get("/latest", async (req: Request, res: Response) => {
-    if (latestReading === null) {
-        // @ts-expect-error This is the same type ase the reading thing
-        latestReading = await readingsModel
+    if (
+        latestReading === null ||
+        Date.now() - latestReading.cachedTime >
+            parseInt(process.env.REST_CACHE_EXPIRE_TIME_S!) * 1000
+    ) {
+        const dbRead = await readingsModel
             .findOne({}, { _id: 0, __v: 0 })
             .sort({ timestamp: "desc" });
+        if (dbRead) {
+            latestReading = {
+                // @ts-expect-error This is the same type ase the reading thing
+                readings: dbRead,
+                cachedTime: Date.now(),
+            };
+        }
     }
     res.status(200).json(latestReading);
 });
@@ -103,7 +113,7 @@ restRouter.post("/readings", async (req: Request, res: Response) => {
             percent: chemFormula((req.body as iIoTPayload).readings),
         };
 
-        latestReading = payload;
+        latestReading = { readings: payload, cachedTime: Date.now() };
         getIO().of("/io/v1").emit("readings", payload);
         await new readingsModel(payload).save();
 
