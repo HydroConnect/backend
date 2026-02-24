@@ -11,7 +11,8 @@
         "lint": "eslint controllers lib schemas server.ts",
         "test": "vitest",
         "testAll": "npm run lint && npm run test",
-        "dev": "tsx --watch ./server.ts"
+        "dev": "tsx --watch ./server.ts",
+        "genDummy": "tsx genDummy.ts"
     },
     "repository": {
         "type": "git",

@@ -27,9 +27,9 @@ Hydroconnect API provides both **REST** and **Socket.IO (IO)** endpoints for int
 The Hydroconnect API serves as a bridge between IoT devices and clients.
 It enables:
 
--   IoT devices to push sensor readings in real time.
--   Clients to download summarized data and request historical reports.
--   Chunked and asynchronous data streaming for large downloads.
+- IoT devices to push sensor readings in real time.
+- Clients to download summarized data and request historical reports.
+- Chunked and asynchronous data streaming for large downloads.
 
 ---
 
@@ -596,14 +596,14 @@ There can be 2 type of server starting: start on development or start on product
 
 IF `NODE_ENV!=production`, then following become true:
 
--   `/interactAPI` HTML page for manual interaction.
--   Artificial timeouts to simulate real-world delay in report downloads.
--   Logger also logs to console
--   Local Caching of last summary entry is disabled
+- `/interactAPI` HTML page for manual interaction.
+- Artificial timeouts to simulate real-world delay in report downloads.
+- Logger also logs to console
+- Local Caching of last summary entry is disabled
 
 IFF `NODE_ENV=production` & `IS_LINUX=true`:
 
--   Github Webhooks auto-update is enabled.
+- Github Webhooks auto-update is enabled.
 
 ---
 
@@ -619,9 +619,9 @@ The project includes comprehensive test cases for all available endpoints.
 
 **Test coverage includes:**
 
--   All REST endpoints except `/github-webhook`, can be test manually from github.
--   IO `readings`, `download-request`, `download-data`, `download-finish`, and `error` events.
--   Doesn't test for notification system, test manually using phone and InteractAPI.html or copy ExpoPushToken to `realExpoToken` variable on `rest` test file in. **WARNING!** don't commit the token, manual testing preferred.
+- All REST endpoints except `/github-webhook`, can be test manually from github.
+- IO `readings`, `download-request`, `download-data`, `download-finish`, and `error` events.
+- Doesn't test for notification system, test manually using phone and InteractAPI.html or copy ExpoPushToken to `realExpoToken` variable on `rest` test file in. **WARNING!** don't commit the token, manual testing preferred.
 
 ---
 
@@ -650,8 +650,8 @@ Add a new test if a new endpoint is added and make sure all test passed. To test
 There is a custom `HttpError` class for HTTP-related errors with a `status` property and `IOError` with `IOErrorEnum` for IO-related errors.
 The system also includes two dedicated handlers:
 
--   `RESTErrorHandler` for REST endpoints (e.g., Http Response 400 for invalid request body, 500 for any unknown error)
--   `IOErrorHandler` for Socket.IO events (i.e., sent as `error` events)
+- `RESTErrorHandler` for REST endpoints (e.g., Http Response 400 for invalid request body, 500 for any unknown error)
+- `IOErrorHandler` for Socket.IO events (i.e., sent as `error` events)
 
 ---
 
