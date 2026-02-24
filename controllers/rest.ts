@@ -95,7 +95,7 @@ restRouter.get("/latest", async (req: Request, res: Response) => {
             };
         }
     }
-    res.status(200).json(latestReading);
+    res.status(200).json(latestReading?.readings ?? null);
 });
 
 let notificationTimeout: null | NodeJS.Timeout = null;

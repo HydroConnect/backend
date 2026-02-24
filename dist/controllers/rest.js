@@ -67,13 +67,21 @@ restRouter.get("/summary", async (req, res) => {
     res.status(200).json(output);
 });
 restRouter.get("/latest", async (req, res) => {
-    if (latestReading === null) {
-        // @ts-expect-error This is the same type ase the reading thing
-        latestReading = await readingsModel
+    if (latestReading === null ||
+        Date.now() - latestReading.cachedTime >
+            parseInt(process.env.REST_CACHE_EXPIRE_TIME_S) * 1000) {
+        const dbRead = await readingsModel
             .findOne({}, { _id: 0, __v: 0 })
             .sort({ timestamp: "desc" });
+        if (dbRead) {
+            latestReading = {
+                // @ts-expect-error This is the same type ase the reading thing
+                readings: dbRead,
+                cachedTime: Date.now(),
+            };
+        }
     }
-    res.status(200).json(latestReading);
+    res.status(200).json(latestReading?.readings ?? null);
 });
 let notificationTimeout = null;
 restRouter.post("/readings", async (req, res) => {
@@ -88,7 +96,7 @@ restRouter.post("/readings", async (req, res) => {
             timestamp: new Date(Date.now()).toISOString(),
             percent: chemFormula(req.body.readings),
         };
-        latestReading = payload;
+        latestReading = { readings: payload, cachedTime: Date.now() };
         getIO().of("/io/v1").emit("readings", payload);
         await new readingsModel(payload).save();
         // Update Uptime
