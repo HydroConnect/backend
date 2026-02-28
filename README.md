@@ -325,9 +325,9 @@ All uncaught error in REST API will be handled by `errorHandler` via `HttpError`
 
 ### Endpoints
 
-## `GET /summary`
+## `GET /summary?[end_date]=UNIX_TIME(number ms)`
 
-Returns uptime summaries for the last **7 days**, ordered from newest to oldest.
+Returns uptime summaries for the last **7 days** (inclusive) before the `end_date` or now (if `end_date` is not supplied), ordered from newest to oldest. This will return in timestamp **descending** order.
 If a day has no data, uptime is returned as `0`.
 
 ### Response `Summaries[]`

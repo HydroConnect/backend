@@ -98,6 +98,24 @@ describe("GET /summary", () => {
         expect(data[0].uptime).toEqual(0);
         expect(data.length).toEqual(7);
     });
+
+    it("Implements paging", async () => {
+        const data = JSON.parse(
+            (await myaxios.get("/summary?end_date=" + (Date.now() - 3600 * 70 * 1000).toString()))
+                .data
+        );
+        console.log(data);
+        expect(() => {
+            for (let i = 0; i < data.length; i++) {
+                zSummaries.parse(data[i]);
+            }
+        }).not.toThrow();
+        expect(data[0].timestamp).toEqual(
+            getMidnightDate(new Date(Date.now() - 3600 * 70 * 1000)).toISOString()
+        );
+        expect(data[data.length - 1].uptime).toEqual(0);
+        expect(data.length).toEqual(7);
+    });
 });
 
 describe("GET /latest", () => {

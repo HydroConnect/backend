@@ -45,10 +45,17 @@ async function populateTodaySummary() {
 }
 
 restRouter.get("/summary", async (req: Request, res: Response) => {
-    const earliestDate = getMidnightDate(new Date());
+    let nowDate = new Date();
+    if (typeof req.query?.end_date === "string" && !isNaN(parseInt(req.query.end_date))) {
+        nowDate = new Date(parseInt(req.query.end_date));
+    }
+    nowDate = getMidnightDate(nowDate);
+
+    // This is to copy and not saving the reference
+    const earliestDate = new Date(nowDate);
     earliestDate.setUTCDate(earliestDate.getDate() - 7);
     const summary = await summariesModel.find(
-        { timestamp: { $gt: earliestDate } },
+        { timestamp: { $gt: earliestDate, $lte: nowDate } },
         { __v: 0, _id: 0 }
     );
     const output: any[] = [];
@@ -59,7 +66,7 @@ restRouter.get("/summary", async (req: Request, res: Response) => {
             output.push(summary[idx]!.toJSON());
             idx--;
         } else {
-            let supposedDatetime = new Date();
+            let supposedDatetime = new Date(nowDate);
             supposedDatetime.setUTCDate(supposedDatetime.getDate() - i);
             supposedDatetime = getMidnightDate(supposedDatetime);
             if (
