@@ -222,22 +222,52 @@ restRouter.post("/notifications/unregister", async (req: Request, res: Response)
 
 const myPanduanData: iPanduanData[] = [
     {
-        title: "Cara Menyalakan Pompa",
-        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
-        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-        steps: ["Lorem", "Ipsum"],
+        title: "Cara Merawat Panel Surya",
+        videoUrl: "https://www.youtube.com/watch?v=lnqGPnFxlKE",
+        thumbnailUrl: "https://img.youtube.com/vi/lnqGPnFxlKE/maxresdefault.jpg",
+        steps: [
+            "Lakukan perawatan panel surya secara rutin setiap 1 bulan sekali dengan memeriksa kondisi panel.",
+            "Pastikan tidak ada benda yang menutupi panel seperti daun, ranting, atau kotoran lainnya.",
+            "Bersihkan permukaan panel menggunakan lap dengan cara mengusap satu arah, dan gunakan deterjen jika ada noda yang sulit dibersihkan.",
+            "Periksa kondisi fisik panel, pastikan tidak ada retakan atau kerusakan pada permukaan panel.",
+            "Cek kabel-kabel pada panel surya untuk memastikan semuanya terpasang dan berfungsi dengan baik, serta hubungi teknisi jika ditemukan masalah.",
+        ],
     },
     {
-        title: "Cara Memberihkan Filter",
-        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
-        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-        steps: ["Lorem", "Ipsum"],
+        title: "Cara Menggunakan Filter Air",
+        videoUrl: "https://youtube.com/watch?v=04ESFHJmY_E",
+        thumbnailUrl: "https://img.youtube.com/vi/04ESFHJmY_E/maxresdefault.jpg",
+        steps: [
+            "Pilih sumber listrik dengan menyalakan saklar dari PLN atau panel surya.",
+            "Nyalakan mesin pompa air dengan memasukkan saklar hingga mesin aktif dan air mulai diproses oleh mesin penjernih.",
+            "Lakukan perawatan rutin setiap 2 minggu sekali dengan metode backwash untuk membersihkan media filter di dalam mesin.",
+            "Saat backwash, hidupkan mesin lalu geser tuas ke posisi paling kiri selama sekitar 15 menit sambil membuka aliran air hingga kotoran keluar.",
+            "Setelah itu geser tuas ke posisi tengah selama sekitar 5 menit untuk pembilasan, lalu kembalikan lagi ke posisi semula hingga air kembali jernih.",
+        ],
     },
     {
-        title: "Cara Merawat Panel Surya dan Alat Sensor",
-        videoUrl: "https://youtube.com/watch?v=dQw4w9WgXcQ",
-        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-        steps: ["Lorem", "Ipsum"],
+        title: "Cara Membersihkan Filter Air",
+        videoUrl: "https://youtube.com/watch?v=3oXhSL3xQgQ",
+        thumbnailUrl: "https://img.youtube.com/vi/3oXhSL3xQgQ/maxresdefault.jpg",
+        steps: [
+            "Periksa busa filter dan jika tampungan sudah penuh hingga air hampir meluap, buka sedikit penutupnya untuk mengeluarkan sisa air di pipa.",
+            "Setelah air tidak meluap, buka penutup filter menggunakan alat yang tersedia dengan memutarnya ke arah kiri.",
+            "Keluarkan busa filter lama dari tempatnya dan buang jika sudah kotor atau tidak layak digunakan.",
+            "Tunggu hingga sisa air di dalam pipa benar-benar habis sebelum memasang filter baru.",
+            "Pasang busa filter yang baru, lalu kencangkan kembali menggunakan alat hingga terpasang dengan aman.",
+        ],
+    },
+    {
+        title: "Cara Backwash Filter Air",
+        videoUrl: "https://youtube.com/watch?v=qkBqR70C86M",
+        thumbnailUrl: "https://img.youtube.com/vi/qkBqR70C86M/maxresdefault.jpg",
+        steps: [
+            "Pastikan kran air terbuka dan air sudah mengalir sebelum mesin penyaringan digunakan.",
+            "Lakukan backwash dengan memutar panel ke posisi paling kanan selama sekitar 15 menit untuk membersihkan filter sambil memeriksa kejernihan air.",
+            "Setelah air terlihat lebih jernih, pindahkan panel ke posisi tengah selama sekitar 5 menit untuk proses pembilasan.",
+            "Jika air sudah terlihat jernih, pindahkan panel ke posisi paling kiri sehingga air siap digunakan.",
+            "Lakukan perawatan ini setiap 2 minggu sekali agar mesin tetap awet dan kualitas air tetap terjaga.",
+        ],
     },
 ];
 
